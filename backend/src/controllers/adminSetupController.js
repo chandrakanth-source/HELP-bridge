@@ -3,6 +3,23 @@ const pool = require("../config/database");
 
 const bootstrapAdmin = async (req, res) => {
   try {
+    // ── Secret-key guard ──────────────────────────────────────────────────────
+    // The caller must supply the correct key in the x-setup-key header.
+    // Set ADMIN_SETUP_KEY in your .env file and never share it publicly.
+    const setupKey = process.env.ADMIN_SETUP_KEY;
+    if (!setupKey) {
+      // If the key is not configured on the server at all, lock setup down.
+      return res.status(503).json({
+        message: "Admin setup is not enabled on this server.",
+      });
+    }
+    if (req.headers["x-setup-key"] !== setupKey) {
+      return res.status(403).json({
+        message: "Invalid or missing setup key. Access denied.",
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     const { name, email, phone, password } = req.body;
 
     if (!name || !email || !phone || !password) {
