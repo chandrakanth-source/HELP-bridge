@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://help-bridge-34vg.onrender.com/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://help-bridge-backend-34vg.onrender.com/api";
 
 /** @param {string} endpoint @param {RequestInit} [options] @param {string|null} [token] @returns {Promise<any>} */
 export const apiRequest = async (endpoint, options = {}, token = null) => {
