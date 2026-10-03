@@ -2,14 +2,12 @@
 Unit Testing Suite (UT-01 to UT-12) & White-Box Testing (WB-01 to WB-08)
 For HelpBridge - Emergency & Non-Emergency Help Request Platform
 """
-
 import pytest
 import time
 from tests.conftest import (
     haversine_distance,
     find_nearest_neighbors,
-    get_buffer_duration_seconds,
-)
+    get_buffer_duration_seconds,)
 
 
 # ==============================================================================

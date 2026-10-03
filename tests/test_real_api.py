@@ -8,12 +8,6 @@ import time
 import uuid
 import pytest
 import requests
-
-
-# ==============================================================================
-# SECTION 1: Health & Service Connectivity
-# ==============================================================================
-
 @pytest.mark.real_api
 def test_real_api_01_health_check(real_api_base_url):
     """
