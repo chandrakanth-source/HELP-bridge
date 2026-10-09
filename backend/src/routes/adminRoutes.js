@@ -13,3 +13,4 @@ router.get("/managers", getManagers);
 router.patch("/managers/:id", updateManagerStatus);
 
 module.exports = router;
+

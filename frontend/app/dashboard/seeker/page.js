@@ -122,7 +122,6 @@ export default function SeekerDashboard() {
     (request) => request.status === "completed",
   );
 
-  // Active requests where a provider has been assigned
   const activeAssignedRequests = requests.filter((r) =>
     ["assigned", "accepted", "in_progress"].includes(r.status),
   );
@@ -779,3 +778,4 @@ function QuickAction({ href, icon, title, color }) {
     </Link>
   );
 }
+

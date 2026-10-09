@@ -14,9 +14,6 @@ const getRazorpayClient = () => {
   });
 };
 
-// ==========================================
-// CREATE RAZORPAY ORDER
-// ==========================================
 const createOrder = async (req, res) => {
   try {
     const razorpay = getRazorpayClient();
@@ -34,7 +31,6 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // Get help request
     const result = await pool.query(
       `
             SELECT
@@ -56,27 +52,18 @@ const createOrder = async (req, res) => {
 
     const request = result.rows[0];
 
-    // Only the seeker who created the request can pay
     if (request.requester_id !== req.user.id) {
       return res.status(403).json({
         message: "You are not authorized to make this payment",
       });
     }
 
-    // Payment only after help is completed
     if (request.status !== "completed") {
       return res.status(400).json({
         message: "Payment is available only after the help is completed",
       });
     }
 
-    /*
-     * TEST AMOUNT
-     * ₹100 = 10000 paise
-     *
-     * Later we can replace this with
-     * your actual HelpBridge pricing system.
-     */
     const amount = 10000;
 
     const options = {
@@ -85,10 +72,8 @@ const createOrder = async (req, res) => {
       receipt: `helpbridge_${requestId}`,
     };
 
-    // Create order using Razorpay API
     const order = await razorpay.orders.create(options);
 
-    // Save payment in PostgreSQL
     const payment = await paymentModel.createPayment({
       requestId: request.id,
       seekerId: request.requester_id,
@@ -114,9 +99,6 @@ const createOrder = async (req, res) => {
   }
 };
 
-// ==========================================
-// VERIFY RAZORPAY PAYMENT
-// ==========================================
 const verifyPayment = async (req, res) => {
   try {
     if (!process.env.RAZORPAY_KEY_SECRET) {
@@ -133,13 +115,11 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // Generate expected Razorpay signature
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
 
-    // Compare signatures
     const expectedBuffer = Buffer.from(expectedSignature, "utf8");
     const receivedBuffer = Buffer.from(razorpay_signature, "utf8");
     if (
@@ -151,7 +131,6 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // Update payment status
     const payment = await paymentModel.updatePaymentStatus(
       razorpay_order_id,
       "successful",
@@ -182,3 +161,4 @@ module.exports = {
   createOrder,
   verifyPayment,
 };
+

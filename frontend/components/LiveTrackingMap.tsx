@@ -48,7 +48,7 @@ export default function LiveTrackingMap({ requestId }: LiveTrackingMapProps) {
 
   useEffect(() => {
     fetchTracking();
-    const interval = setInterval(fetchTracking, 5000); // 5 second live poll
+    const interval = setInterval(fetchTracking, 5000);
     return () => clearInterval(interval);
   }, [requestId]);
 
@@ -71,7 +71,6 @@ export default function LiveTrackingMap({ requestId }: LiveTrackingMapProps) {
   const provLon = data.provider_live_lon;
   const distance = data.distance_km;
 
-  // Approximate ETA assuming average speed of 30 km/h in emergency response
   const etaMinutes = distance ? Math.ceil((distance / 30) * 60) : null;
 
   return (
@@ -115,7 +114,7 @@ export default function LiveTrackingMap({ requestId }: LiveTrackingMapProps) {
       <div className="relative h-72 bg-slate-950 flex items-center justify-center overflow-hidden">
         {/* Radar Map Grid Background */}
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]" />
-        
+
         {/* OpenStreetMap Embed Frame */}
         <iframe
           title="Live Map"
@@ -176,3 +175,4 @@ export default function LiveTrackingMap({ requestId }: LiveTrackingMapProps) {
     </div>
   );
 }
+

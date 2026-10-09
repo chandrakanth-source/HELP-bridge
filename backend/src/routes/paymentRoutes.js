@@ -18,10 +18,8 @@ const paymentRateLimit = rateLimit({
   legacyHeaders: false,
 });
 
-// Create Razorpay order
 router.post("/create-order", paymentRateLimit, authMiddleware, createOrder);
 
-// Verify Razorpay payment
 router.post("/verify", paymentRateLimit, authMiddleware, verifyPayment);
 
 router.get("/completed", authMiddleware, async (req, res) => {
@@ -35,3 +33,4 @@ router.get("/completed", authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+

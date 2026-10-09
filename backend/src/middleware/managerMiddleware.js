@@ -23,3 +23,4 @@ const managerMiddleware = (req, res, next) => {
 };
 
 module.exports = managerMiddleware;
+

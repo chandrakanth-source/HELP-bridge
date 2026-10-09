@@ -127,7 +127,6 @@ function LegacyAvailableRequestsPage() {
   const filteredRequests = useMemo(() => {
     let result = [...requests];
 
-    // Search
     if (search.trim()) {
       const value = search.toLowerCase();
 
@@ -140,14 +139,12 @@ function LegacyAvailableRequestsPage() {
       );
     }
 
-    // Type filter
     if (typeFilter !== "All") {
       result = result.filter(
         (request) => request.type === typeFilter
       );
     }
 
-    // Sorting
     if (sortBy === "nearest") {
       result.sort((a, b) => a.distance - b.distance);
     }
@@ -209,7 +206,6 @@ function LegacyAvailableRequestsPage() {
 
         </div>
 
-
         {/* NAVIGATION */}
 
         <nav className="px-3 py-6">
@@ -266,7 +262,6 @@ function LegacyAvailableRequestsPage() {
 
         </nav>
 
-
         {/* LOGOUT */}
 
         <div className="absolute bottom-0 left-3 right-3 border-t border-white/10 py-5">
@@ -283,7 +278,6 @@ function LegacyAvailableRequestsPage() {
 
       </aside>
 
-
       {/* MOBILE OVERLAY */}
 
       {sidebarOpen && (
@@ -292,7 +286,6 @@ function LegacyAvailableRequestsPage() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
 
       {/* ================================================= */}
       {/* MAIN */}
@@ -311,7 +304,6 @@ function LegacyAvailableRequestsPage() {
             <Menu size={25} />
           </button>
 
-
           <div className="ml-auto flex items-center gap-6">
 
             {/* NOTIFICATION */}
@@ -325,7 +317,6 @@ function LegacyAvailableRequestsPage() {
               </span>
 
             </button>
-
 
             {/* PROFILE */}
 
@@ -353,7 +344,6 @@ function LegacyAvailableRequestsPage() {
 
         </header>
 
-
         {/* ================================================= */}
         {/* CONTENT */}
         {/* ================================================= */}
@@ -374,7 +364,6 @@ function LegacyAvailableRequestsPage() {
             </p>
 
           </div>
-
 
           {/* ================================================= */}
           {/* FILTER BAR */}
@@ -405,7 +394,6 @@ function LegacyAvailableRequestsPage() {
 
               </div>
 
-
               {/* ALL */}
 
               <FilterButton
@@ -414,7 +402,6 @@ function LegacyAvailableRequestsPage() {
               >
                 All
               </FilterButton>
-
 
               {/* EMERGENCY */}
 
@@ -430,7 +417,6 @@ function LegacyAvailableRequestsPage() {
               >
                 Emergency
               </FilterButton>
-
 
               {/* NON EMERGENCY */}
 
@@ -448,7 +434,6 @@ function LegacyAvailableRequestsPage() {
               >
                 Non-Emergency
               </FilterButton>
-
 
               {/* NEAREST */}
 
@@ -469,7 +454,6 @@ function LegacyAvailableRequestsPage() {
 
               </button>
 
-
               {/* PAYMENT */}
 
               <button
@@ -488,7 +472,6 @@ function LegacyAvailableRequestsPage() {
                 <ChevronDown size={15} />
 
               </button>
-
 
               {/* RESET */}
 
@@ -511,7 +494,6 @@ function LegacyAvailableRequestsPage() {
 
           </div>
 
-
           {/* ================================================= */}
           {/* RESULT COUNT */}
           {/* ================================================= */}
@@ -531,7 +513,6 @@ function LegacyAvailableRequestsPage() {
             </p>
 
           </div>
-
 
           {/* ================================================= */}
           {/* REQUEST LIST */}
@@ -580,7 +561,6 @@ function LegacyAvailableRequestsPage() {
 
           </div>
 
-
           {/* ================================================= */}
           {/* PAGINATION */}
           {/* ================================================= */}
@@ -591,38 +571,31 @@ function LegacyAvailableRequestsPage() {
               Showing 1 to {filteredRequests.length} of 24 requests
             </p>
 
-
             <div className="flex items-center gap-2">
 
               <button className="flex h-10 w-10 items-center justify-center rounded-lg border bg-white text-slate-500 hover:bg-slate-50">
                 <ChevronLeft size={18} />
               </button>
 
-
               <button className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
                 1
               </button>
-
 
               <button className="hidden h-10 w-10 items-center justify-center rounded-lg border bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:flex">
                 2
               </button>
 
-
               <button className="hidden h-10 w-10 items-center justify-center rounded-lg border bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:flex">
                 3
               </button>
-
 
               <span className="px-1 text-slate-400">
                 ...
               </span>
 
-
               <button className="hidden h-10 w-10 items-center justify-center rounded-lg border bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 sm:flex">
                 6
               </button>
-
 
               <button className="flex h-10 w-10 items-center justify-center rounded-lg border bg-white text-slate-500 hover:bg-slate-50">
                 <ChevronRight size={18} />
@@ -640,11 +613,6 @@ function LegacyAvailableRequestsPage() {
   );
 }
 
-
-/* ================================================= */
-/* REQUEST CARD */
-/* ================================================= */
-
 function RequestCard({
   request,
   accepted,
@@ -661,7 +629,6 @@ function RequestCard({
     <div className="rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md">
 
       <div className="grid gap-5 xl:grid-cols-[1.8fr_1fr_250px] xl:items-center">
-
 
         {/* ================================================= */}
         {/* LEFT */}
@@ -683,7 +650,6 @@ function RequestCard({
             <RequestIcon type={request.icon} />
           </div>
 
-
           <div className="min-w-0">
 
             {/* TYPE */}
@@ -698,13 +664,11 @@ function RequestCard({
               {request.type}
             </span>
 
-
             {/* TITLE */}
 
             <h3 className="mt-2 text-lg font-bold text-slate-800">
               {request.title}
             </h3>
-
 
             {/* REQUEST ID */}
 
@@ -717,7 +681,6 @@ function RequestCard({
               </span>
 
             </p>
-
 
             {/* LOCATION */}
 
@@ -734,16 +697,13 @@ function RequestCard({
 
               </span>
 
-
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-
 
               <span>
                 {request.distance} km away
               </span>
 
             </div>
-
 
             {/* REQUIREMENT */}
 
@@ -758,7 +718,6 @@ function RequestCard({
               </span>
 
             </p>
-
 
             {/* PRIORITY + TIME */}
 
@@ -778,7 +737,6 @@ function RequestCard({
 
               </span>
 
-
               <span className="flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-[10px] text-slate-500">
 
                 <Clock size={12} />
@@ -793,7 +751,6 @@ function RequestCard({
 
         </div>
 
-
         {/* ================================================= */}
         {/* REQUESTER */}
         {/* ================================================= */}
@@ -803,7 +760,6 @@ function RequestCard({
           <p className="text-[11px] font-semibold text-slate-400">
             REQUESTER
           </p>
-
 
           <div className="mt-3 flex items-center gap-3">
 
@@ -825,7 +781,6 @@ function RequestCard({
 
           </div>
 
-
           <div className="mt-3 flex items-center gap-3">
 
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
@@ -845,7 +800,6 @@ function RequestCard({
             </div>
 
           </div>
-
 
           <div className="mt-3 flex items-center gap-3">
 
@@ -875,7 +829,6 @@ function RequestCard({
 
         </div>
 
-
         {/* ================================================= */}
         {/* PAYMENT + BUTTONS */}
         {/* ================================================= */}
@@ -898,7 +851,6 @@ function RequestCard({
 
           </div>
 
-
           <div className="mt-3 flex gap-2">
 
             <Link
@@ -907,7 +859,6 @@ function RequestCard({
             >
               View Details
             </Link>
-
 
             <button
               onClick={onAccept}
@@ -930,11 +881,6 @@ function RequestCard({
     </div>
   );
 }
-
-
-/* ================================================= */
-/* FILTER BUTTON */
-/* ================================================= */
 
 function FilterButton({
   children,
@@ -964,11 +910,6 @@ function FilterButton({
     </button>
   );
 }
-
-
-/* ================================================= */
-/* SIDEBAR ITEM */
-/* ================================================= */
 
 function SidebarItem({
   href,
@@ -1002,7 +943,6 @@ function SidebarItem({
 
       </span>
 
-
       {badge && (
         <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold">
           {badge}
@@ -1012,11 +952,6 @@ function SidebarItem({
     </Link>
   );
 }
-
-
-/* ================================================= */
-/* REQUEST ICON */
-/* ================================================= */
 
 function RequestIcon({
   type,
@@ -1038,11 +973,6 @@ function RequestIcon({
 
   return <Bike size={27} />;
 }
-
-
-/* ================================================= */
-/* SHIELD ICON */
-/* ================================================= */
 
 function ShieldIcon() {
 

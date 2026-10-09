@@ -16,3 +16,4 @@ router.patch("/location", updateLocation);
 router.patch("/availability", updateAvailability);
 
 module.exports = router;
+

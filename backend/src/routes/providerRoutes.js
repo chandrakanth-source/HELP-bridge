@@ -35,7 +35,7 @@ router.put(
   providerMiddleware,
   startRequest,
 );
-// Get approved requests
+
 router.get(
   "/requests/available",
   authMiddleware,
@@ -45,7 +45,6 @@ router.get(
 
 router.get("/requests/mine", authMiddleware, providerMiddleware, getMyRequests);
 
-// Get request details
 router.get(
   "/requests/:id",
   authMiddleware,
@@ -53,7 +52,6 @@ router.get(
   getRequestDetails,
 );
 
-// Accept request
 router.put(
   "/requests/:id/accept",
   authMiddleware,
@@ -68,3 +66,4 @@ router.put(
 );
 
 module.exports = router;
+

@@ -46,7 +46,6 @@ export default function LoginPage() {
       <div className="w-full max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl">
         <div className="grid min-h-[680px] lg:grid-cols-2">
 
-
           <div className="relative hidden overflow-hidden bg-emerald-700 lg:flex">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-700 via-teal-700 to-slate-900" />
             <div className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-emerald-400/20" />
@@ -79,7 +78,6 @@ export default function LoginPage() {
               <p className="text-sm text-emerald-100">© 2026 HelpBridge</p>
             </div>
           </div>
-          
 
          <div className="flex items-center justify-center p-8 sm:p-12">
             <div className="w-full max-w-md">
@@ -159,7 +157,7 @@ export default function LoginPage() {
     </main>
   );
 }
-/* ================= COMPONENTS ================= */
+
 function Feature({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-3">

@@ -4,7 +4,6 @@ const {
   getHelpRequestById,
 } = require("../models/helpRequestModels");
 
-// Create a new help request
 const createRequest = async (req, res) => {
   try {
     const {
@@ -17,7 +16,6 @@ const createRequest = async (req, res) => {
       address,
     } = req.body;
 
-    // Basic validation
     if (
       !request_type ||
       !title ||
@@ -36,7 +34,6 @@ const createRequest = async (req, res) => {
       });
     }
 
-    // Get logged-in user's ID
     const requester_id = req.user.id;
 
     const pool = require("../config/database");
@@ -53,7 +50,6 @@ const createRequest = async (req, res) => {
       address,
     });
 
-    // Every request is reviewed before it is broadcast to providers.
     const managersRes = await pool.query(
       `SELECT id FROM users WHERE role = 'manager'`,
     );
@@ -85,7 +81,6 @@ const createRequest = async (req, res) => {
   }
 };
 
-// Get all requests created by logged-in user
 const getMyRequests = async (req, res) => {
   try {
     const requester_id = req.user.id;
@@ -137,3 +132,4 @@ module.exports = {
   getMyRequests,
   getRequestById,
 };
+

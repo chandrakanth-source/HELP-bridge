@@ -56,3 +56,4 @@ export default function UserProfilePage() {
 function Field({ id, label, icon, value, disabled = false, onChange }: { id: string; label: string; icon: React.ReactNode; value: string; disabled?: boolean; onChange: (value: string) => void }) {
   return <div><label htmlFor={id} className="mb-2 block text-sm font-semibold text-slate-700">{label}</label><div className="relative"><span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">{icon}</span><input id={id} disabled={disabled} value={value || ""} onChange={(event) => onChange(event.target.value)} className="w-full rounded-xl border border-slate-200 py-3 pl-11 pr-4 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-50 disabled:text-slate-500" /></div></div>;
 }
+

@@ -30,8 +30,6 @@ export default function ManagerRequestWorkflow({ requestId }: { requestId: strin
     } finally { setLoading(false); }
   };
 
-  // Load the request and eligible providers after the route parameter is available.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (requestId) void load(); }, [requestId]);
 
   const assign = async () => {
@@ -56,3 +54,4 @@ export default function ManagerRequestWorkflow({ requestId }: { requestId: strin
 
   return <div><p className="text-sm text-slate-500">Emergency request #{request.id}</p><div className="mt-4 grid gap-6 lg:grid-cols-2"><section className="rounded-xl border bg-white p-6"><h2 className="text-lg font-bold text-slate-900">Request details</h2><dl className="mt-5 space-y-3 text-sm"><div><dt className="font-semibold">Status</dt><dd>{request.status.replaceAll("_", " ")}</dd></div><div><dt className="font-semibold">Requester</dt><dd>{request.requester_name} · {request.requester_phone}</dd></div><div><dt className="font-semibold">Email</dt><dd>{request.requester_email}</dd></div><div><dt className="font-semibold">Location</dt><dd>{request.address || "Location unavailable"}</dd></div><div><dt className="font-semibold">Description</dt><dd>{request.description || "No description provided"}</dd></div></dl></section><section className="rounded-xl border bg-white p-6"><h2 className="text-lg font-bold text-slate-900">Provider assignment</h2>{request.provider_name ? <p className="mt-5 text-sm text-slate-700">{request.provider_name} · {request.provider_phone}</p> : <><label className="mt-5 block text-sm font-semibold text-slate-700" htmlFor="provider">Available verified provider</label><select id="provider" value={providerId} onChange={(event) => setProviderId(event.target.value)} className="mt-2 w-full rounded-lg border px-3 py-2 text-sm"><option value="">Select a provider</option>{providers.map((provider) => <option key={provider.id} value={provider.id}>{provider.name} {provider.occupation ? `· ${provider.occupation}` : ""} · {provider.phone}</option>)}</select><button disabled={busy || !providerId || request.status !== "approved"} onClick={assign} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Assigning..." : "Assign provider"}</button>{providers.length === 0 && <p className="mt-3 text-xs text-slate-500">{providerUnavailableMessage}</p>}</>}{message && <p className="mt-3 text-sm text-green-700">{message}</p>}{error && <p className="mt-3 text-sm text-red-600">{error}</p>}</section></div></div>;
 }
+

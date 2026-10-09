@@ -1,25 +1,23 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://help-bridge-34vg.onrender.com/api";
 
-/** @param {string} endpoint @param {RequestInit} [options] @param {string|null} [token] @returns {Promise<any>} */
-export const apiRequest = async (endpoint, options = {}, token = null) => {
-  const headers = {
+export const apiRequest = async (endpoint: string, options: RequestInit = {}, token: string | null = null): Promise<any> => {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...(options.headers || {}),
+    ...((options.headers as Record<string, string>) || {}),
   };
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  let response;
+  let response: Response;
 
   try {
     response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
     });
-  } catch (err) {
-    // If primary URL failed and running locally, fallback to local backend port 5000
+  } catch {
     if (typeof window !== "undefined" && window.location.hostname === "localhost" && API_URL !== "http://localhost:5000/api") {
       try {
         response = await fetch(`http://localhost:5000/api${endpoint}`, {
@@ -27,19 +25,15 @@ export const apiRequest = async (endpoint, options = {}, token = null) => {
           headers,
         });
       } catch {
-        throw new Error(
-          "Unable to connect to HelpBridge. Please start the backend and try again."
-        );
+        throw new Error("Unable to connect to HelpBridge. Please start the backend and try again.");
       }
     } else {
-      throw new Error(
-        "Unable to connect to HelpBridge. Please start the backend and try again."
-      );
+      throw new Error("Unable to connect to HelpBridge. Please start the backend and try again.");
     }
   }
 
   const responseText = await response.text();
-  let data = {};
+  let data: any = {};
 
   if (responseText) {
     try {

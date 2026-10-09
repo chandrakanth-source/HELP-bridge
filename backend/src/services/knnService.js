@@ -1,9 +1,6 @@
-/**
- * Calculates the Great Circle distance (in kilometers) between two GPS points
- * using the Haversine formula.
- */
+
 function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Earth's radius in kilometers
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
@@ -17,16 +14,9 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
 
-  return Math.round(distance * 100) / 100; // Return rounded to 2 decimal places
+  return Math.round(distance * 100) / 100;
 }
 
-/**
- * Finds the K nearest neighbors among a list of candidates relative to a target location.
- * @param {Object} targetLocation - { latitude, longitude }
- * @param {Array} candidateProviders - Array of providers with { id, latitude, longitude, ... }
- * @param {number} k - Number of nearest neighbors to return (default 1)
- * @returns {Array} Sorted candidate providers with attached `distance_km` property
- */
 function findNearestNeighbors(targetLocation, candidateProviders, k = 1) {
   if (!targetLocation || candidateProviders.length === 0) {
     return [];
@@ -60,3 +50,4 @@ module.exports = {
   calculateHaversineDistance,
   findNearestNeighbors,
 };
+

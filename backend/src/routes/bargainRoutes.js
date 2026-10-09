@@ -14,3 +14,4 @@ router.post("/accept/:offerId", authenticateToken, acceptOffer);
 router.post("/reject/:offerId", authenticateToken, rejectOffer);
 
 module.exports = router;
+

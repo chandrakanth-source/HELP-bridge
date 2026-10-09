@@ -18,7 +18,6 @@ const chatMiddleware = async (req, res, next) => {
     const isRequester = Number(request.requester_id) === Number(userId);
     const isSingleProvider = Number(request.assigned_provider_id) === Number(userId);
 
-    // Also allow any provider in request_assignments (multi-provider)
     let isAssignedProvider = isSingleProvider;
     if (!isAssignedProvider) {
       const assignRes = await pool.query(
@@ -41,3 +40,4 @@ const chatMiddleware = async (req, res, next) => {
 };
 
 module.exports = chatMiddleware;
+

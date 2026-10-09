@@ -75,7 +75,7 @@ export default function SosPage() {
         <GpsTracker onLocationUpdate={(c) => setCoords(c)} />
 
         {!activeRequestId ? (
-          /* SOS Request Form Card */
+
           <div className="bg-slate-900 border border-rose-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
             <div className="text-center space-y-2">
               <div className="inline-flex p-4 rounded-3xl bg-rose-500/10 text-rose-500 border border-rose-500/30 mb-2">
@@ -131,7 +131,7 @@ export default function SosPage() {
             </button>
           </div>
         ) : (
-          /* Active SOS Tracking Dashboard */
+
           <div className="space-y-6">
             <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl flex items-center gap-3 text-emerald-400">
               <CheckCircle className="w-6 h-6 shrink-0" />
@@ -149,3 +149,4 @@ export default function SosPage() {
     </main>
   );
 }
+

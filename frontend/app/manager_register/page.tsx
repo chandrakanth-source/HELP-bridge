@@ -70,7 +70,6 @@ export default function ManagerRegisterPage() {
 
         </div>
 
-
         <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
           <div className="hidden bg-gradient-to-br from-emerald-700 to-teal-800 p-10 text-white lg:block">
             <div className="sticky top-10">

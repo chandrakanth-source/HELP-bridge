@@ -100,3 +100,4 @@ function SettingRow({ label, description, enabled, onToggle }) {
     </div>
   );
 }
+

@@ -54,8 +54,6 @@ function useProviderRequests(available = false) {
     }
   };
 
-  // The request is loaded after mount so the page can render its loading state first.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [available]);
   return { requests, error, loading, reload: load };
 }
@@ -73,7 +71,7 @@ function useLiveProviderLocation(active: boolean, requestId?: number) {
         body: JSON.stringify({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
       }, localStorage.getItem("token"));
       setLocationStatus("active");
-      // Also emit via socket so any open tracking page gets real-time update
+
       if (activeRequestId.current && socket.connected) {
         socket.emit("provider_location_update", {
           requestId: activeRequestId.current,
@@ -101,7 +99,7 @@ function useLiveProviderLocation(active: boolean, requestId?: number) {
 
   useEffect(() => {
     if (!active) return undefined;
-    // Immediately try to get GPS on mount
+
     startGPS();
     if (!navigator.geolocation) return undefined;
     const watchId = navigator.geolocation.watchPosition(
@@ -163,10 +161,8 @@ export function ProviderAvailableWorkflow() {
   const [actionError, setActionError] = useState("");
   const [bargainRequest, setBargainRequest] = useState<Request | null>(null);
 
-  // Auto-start GPS immediately when this page loads
   const { locationStatus, errorMsg, retryGPS } = useLiveProviderLocation(true, undefined);
 
-  // Connect socket so provider_location_update can be emitted
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -192,7 +188,7 @@ export function ProviderAvailableWorkflow() {
       await reload();
     } catch (requestError) {
       const msg = requestError instanceof Error ? requestError.message : "Unable to express interest.";
-      // If busy with another request, show a prominent alert
+
       if (msg.includes("currently handling")) {
         setActionError(`🚫 ${msg}`);
       } else {
@@ -498,17 +494,14 @@ function StyledChat({ requestId, token }: { requestId: number; token: string | n
   const [userId, setUserId] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Load history + connect socket
   useEffect(() => {
     if (!token || !requestId) return;
 
-    // Get current user id from token payload
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       setUserId(payload.id || payload.userId || null);
     } catch { /* ignore */ }
 
-    // Load message history
     void apiRequest(`/chat/${requestId}/messages`, {}, token).then((data) => {
       const history: ChatMessage[] = (data.messages || []).map((m: { id: number; sender_id: number; message: string; sent_at: string }) => ({
         id: m.id,
@@ -537,7 +530,6 @@ function StyledChat({ requestId, token }: { requestId: number; token: string | n
     };
   }, [requestId, token]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -599,3 +591,4 @@ function StyledChat({ requestId, token }: { requestId: number; token: string | n
     </section>
   );
 }
+

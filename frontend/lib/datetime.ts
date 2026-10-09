@@ -1,8 +1,4 @@
-/**
- * PostgreSQL often returns TIMESTAMP WITHOUT TIME ZONE as "YYYY-MM-DD HH:mm:ss".
- * Browsers treat that as local time, which skews relative times (e.g. ~5.5 hr in IST).
- * We treat naive timestamps as UTC unless they already include a timezone.
- */
+
 export function parseServerTimestamp(value: string | Date | null | undefined): Date | null {
   if (value == null || value === "") return null;
   if (value instanceof Date) return value;
@@ -37,3 +33,4 @@ export function formatRelativeTime(
 
   return `${Math.floor(hours / 24)} days ago`;
 }
+

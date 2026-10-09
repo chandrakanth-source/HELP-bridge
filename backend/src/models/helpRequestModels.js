@@ -1,6 +1,5 @@
 const pool = require("../config/database");
 
-// Create a new help request
 const createHelpRequest = async (requestData) => {
   const {
     requester_id,
@@ -44,7 +43,6 @@ const createHelpRequest = async (requestData) => {
   return result.rows[0];
 };
 
-// Get all help requests created by a particular user
 const getHelpRequestsByUser = async (requester_id) => {
   const query = `
         SELECT *
@@ -58,7 +56,6 @@ const getHelpRequestsByUser = async (requester_id) => {
   return result.rows;
 };
 
-// Get a single help request by ID
 const getHelpRequestById = async (id) => {
   const query = `
         SELECT
@@ -85,3 +82,4 @@ module.exports = {
   getHelpRequestsByUser,
   getHelpRequestById,
 };
+

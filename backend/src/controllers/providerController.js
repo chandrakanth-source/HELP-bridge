@@ -8,7 +8,6 @@ const {
 } = require("../models/providerModels");
 const { createNotification } = require("../models/notificationModel");
 
-// Get approved requests
 const getAvailableRequests = async (req, res) => {
   try {
     const requests = await getApprovedRequests(req.user.id);
@@ -35,7 +34,6 @@ const getMyRequests = async (req, res) => {
   }
 };
 
-// Get a specific request
 const getRequestDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,12 +58,10 @@ const getRequestDetails = async (req, res) => {
   }
 };
 
-// Accept a request
 const acceptRequest = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Provider ID comes from JWT
     const providerId = req.user.id;
     const result = await acceptHelpRequest(id, providerId);
     await createNotification(
@@ -101,11 +97,11 @@ const acceptRequest = async (req, res) => {
     });
   }
 };
-// Start helping the requester
+
 const startRequest = async (req, res) => {
   try {
     const { id } = req.params;
-    // Provider ID comes from JWT
+
     const providerId = req.user.id;
 
     const request = await startHelpRequest(id, providerId);
@@ -136,12 +132,11 @@ const startRequest = async (req, res) => {
     });
   }
 };
-// Complete a help request
+
 const completeRequest = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Provider ID comes from JWT
     const providerId = req.user.id;
     const request = await completeHelpRequest(id, providerId);
 
@@ -179,17 +174,15 @@ const completeRequest = async (req, res) => {
   }
 };
 
-// Providers register interest first. A background job assigns the closest interested provider after the buffer.
 const expressInterestAndAssignKNN = async (req, res) => {
   const pool = require("../config/database");
   const client = await pool.connect();
 
   try {
-    const { id } = req.params; // request id
+    const { id } = req.params;
 
     await client.query("BEGIN");
 
-    // Lock the request so two providers cannot accept the same request.
     const reqRes = await client.query(
       `SELECT * FROM help_requests WHERE id = $1 FOR UPDATE`,
       [id],
@@ -220,7 +213,7 @@ const expressInterestAndAssignKNN = async (req, res) => {
 
     if (providerRes.rows.length === 0) {
       await client.query("ROLLBACK");
-      // Give a clear diagnostic message
+
       const diagRes = await pool.query(
         `SELECT availability_status, latitude, longitude, last_located_at FROM users WHERE id = $1`,
         [req.user.id],
@@ -233,7 +226,6 @@ const expressInterestAndAssignKNN = async (req, res) => {
       return res.status(409).json({ message: `GPS location is stale (last update: ${diag.last_located_at}). Please keep the page open for GPS to refresh.` });
     }
 
-    // *** BUSY CHECK: Prevent provider from accepting multiple requests ***
     const activeRequestRes = await pool.query(
       `SELECT hr.id, hr.title FROM help_requests hr
        WHERE hr.assigned_provider_id = $1
@@ -249,7 +241,6 @@ const expressInterestAndAssignKNN = async (req, res) => {
       });
     }
 
-    // Auto-set provider as available when they express interest
     await client.query(
       `UPDATE users SET availability_status = 'available', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [req.user.id],
@@ -298,7 +289,6 @@ const finalizeProviderInterests = async () => {
   const pool = require("../config/database");
   const { calculateHaversineDistance } = require("../services/knnService");
 
-  // Find requests that have had at least one interested provider for >= 30 seconds
   const pending = await pool.query(
     `SELECT hr.id
      FROM help_requests hr
@@ -322,7 +312,6 @@ const finalizeProviderInterests = async () => {
     try {
       await client.query("BEGIN");
 
-      // Re-fetch with lock — only process if still 'approved'
       const requestResult = await client.query(
         `SELECT * FROM help_requests WHERE id = $1 AND status = 'approved' FOR UPDATE`,
         [row.id],
@@ -332,7 +321,6 @@ const finalizeProviderInterests = async () => {
       const request = requestResult.rows[0];
       const needed = Number(request.providers_needed) || 1;
 
-      // How many providers are already assigned for this request?
       const alreadyRes = await client.query(
         `SELECT COUNT(*) AS cnt FROM request_assignments WHERE request_id = $1`,
         [request.id],
@@ -341,7 +329,6 @@ const finalizeProviderInterests = async () => {
       const remaining = needed - alreadyAssigned;
       if (remaining <= 0) { await client.query("ROLLBACK"); continue; }
 
-      // Candidates: interested, available, have GPS — exclude already-assigned ones
       const candidates = await client.query(
         `SELECT u.id, u.name, u.phone, u.latitude, u.longitude
          FROM provider_request_interests pri
@@ -359,7 +346,6 @@ const finalizeProviderInterests = async () => {
 
       if (!candidates.rows.length) { await client.query("ROLLBACK"); continue; }
 
-      // Sort by Haversine distance, pick the closest `remaining` providers
       const ranked = candidates.rows
         .map((p) => ({
           ...p,
@@ -372,7 +358,7 @@ const finalizeProviderInterests = async () => {
         .slice(0, remaining);
 
       for (const winner of ranked) {
-        // Record in request_assignments
+
         await client.query(
           `INSERT INTO request_assignments (request_id, provider_id, status)
            VALUES ($1, $2, 'accepted')
@@ -380,7 +366,6 @@ const finalizeProviderInterests = async () => {
           [request.id, winner.id],
         );
 
-        // Keep assigned_provider_id pointing to the first (closest) provider for legacy queries
         if (alreadyAssigned === 0 && ranked.indexOf(winner) === 0) {
           await client.query(
             `UPDATE help_requests SET assigned_provider_id = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
@@ -388,14 +373,12 @@ const finalizeProviderInterests = async () => {
           );
         }
 
-        // Mark provider as busy
         await client.query(
           `UPDATE users SET availability_status = 'busy', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
           [winner.id],
         );
       }
 
-      // Flip status to 'accepted' once we've filled all slots
       const totalAssigned = alreadyAssigned + ranked.length;
       if (totalAssigned >= needed) {
         await client.query(
@@ -406,7 +389,6 @@ const finalizeProviderInterests = async () => {
 
       await client.query("COMMIT");
 
-      // Notify seeker
       const names = ranked.map((p) => p.name).join(", ");
       const distInfo = ranked.map((p) => `${p.name} (${p.distance_km} km)`).join(", ");
       await createNotification(
@@ -417,7 +399,6 @@ const finalizeProviderInterests = async () => {
           : `Provider ${ranked[0].name} assigned (${ranked[0].distance_km} km away).`,
       );
 
-      // Notify each winning provider
       for (const winner of ranked) {
         await createNotification(
           winner.id, request.id,
@@ -426,7 +407,6 @@ const finalizeProviderInterests = async () => {
         );
       }
 
-      // Notify non-selected candidates
       const winnerIds = new Set(ranked.map((p) => p.id));
       for (const p of candidates.rows.filter((c) => !winnerIds.has(c.id))) {
         await createNotification(
@@ -444,7 +424,6 @@ const finalizeProviderInterests = async () => {
   }
 };
 
-// Cancel providing help
 const cancelProvideHelp = async (req, res) => {
   const pool = require("../config/database");
   const client = await pool.connect();
@@ -454,7 +433,6 @@ const cancelProvideHelp = async (req, res) => {
     const providerId = req.user.id;
     await client.query("BEGIN");
 
-    // 1. Fetch request details
     const reqRes = await client.query(
       `SELECT hr.*, u.name AS provider_name
        FROM help_requests hr
@@ -485,7 +463,6 @@ const cancelProvideHelp = async (req, res) => {
       });
     }
 
-    // 2. Unassign provider and reset request status to 'approved'
     const updateRes = await client.query(
       `
       UPDATE help_requests
@@ -496,14 +473,12 @@ const cancelProvideHelp = async (req, res) => {
       [id],
     );
 
-    // 3. Mark provider as available again
     await client.query(
       `UPDATE users SET availability_status = 'available', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [providerId],
     );
     await client.query("COMMIT");
 
-    // 4. Notify Requester
     await createNotification(
       helpReq.requester_id,
       id,
@@ -512,7 +487,6 @@ const cancelProvideHelp = async (req, res) => {
       `Provider ${helpReq.provider_name || "Assigned Provider"} had to cancel. Re-routing your request to other nearby providers immediately.`,
     );
 
-    // 5. Re-broadcast notification to all available providers/users
     const providersRes = await pool.query(
       `SELECT id FROM users WHERE role IN ('provider', 'seeker', 'user') AND availability_status = 'available' AND id <> $1`,
       [providerId],
@@ -555,3 +529,4 @@ module.exports = {
   cancelProvideHelp,
   finalizeProviderInterests,
 };
+

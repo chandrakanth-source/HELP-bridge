@@ -23,3 +23,4 @@ const handleChatbotQuery = async (req, res) => {
 module.exports = {
   handleChatbotQuery,
 };
+

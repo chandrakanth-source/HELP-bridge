@@ -76,3 +76,4 @@ export default function ManagerProfilePage() {
 }
 
 function Stat({ value, label }: { value: number; label: string }) { return <div className="rounded-xl bg-slate-50 p-4"><p className="text-2xl font-bold text-slate-800">{value}</p><p className="mt-1 text-xs font-semibold text-slate-500">{label}</p></div>; }
+

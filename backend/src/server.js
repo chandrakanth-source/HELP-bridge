@@ -74,7 +74,6 @@ io.on("connection", (socket) => {
       const isRequester = Number(request.requester_id)        === Number(userId);
       const isProvider  = Number(request.assigned_provider_id) === Number(userId);
 
-      // Also allow any provider listed in request_assignments
       let isAssignedProvider = isProvider;
       if (!isAssignedProvider) {
         const assignRes = await pool.query(
@@ -168,13 +167,11 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} left ${room}`);
   });
 
-  // Provider sends their live GPS coords → broadcast to everyone in the request room
   socket.on("provider_location_update", async (data) => {
     try {
       const { requestId, latitude, longitude } = data;
       if (!requestId || latitude == null || longitude == null) return;
 
-      // Verify this socket's user is the assigned provider for this request
       const result = await pool.query(
         `SELECT assigned_provider_id, requester_id FROM help_requests WHERE id = $1`,
         [requestId],
@@ -183,7 +180,6 @@ io.on("connection", (socket) => {
       const req = result.rows[0];
       if (Number(req.assigned_provider_id) !== Number(socket.user.id)) return;
 
-      // Persist to DB
       await pool.query(
         `UPDATE users SET latitude = $1, longitude = $2, last_located_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $3`,
         [latitude, longitude, socket.user.id],
@@ -193,7 +189,6 @@ io.on("connection", (socket) => {
         [socket.user.id, latitude, longitude],
       );
 
-      // Broadcast to everyone in the request room (seeker + provider)
       const room = `request_${requestId}`;
       io.to(room).emit("tracking_update", {
         requestId,
@@ -277,13 +272,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin-setup", adminSetupRoutes);
 
 const runStartupMigrations = async () => {
-  // Add last_located_at if missing
+
   await pool.query(`
     ALTER TABLE users
     ADD COLUMN IF NOT EXISTS last_located_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
   `);
 
-  // provider_request_interests table
   await pool.query(`
     CREATE TABLE IF NOT EXISTS provider_request_interests (
       id SERIAL PRIMARY KEY,
@@ -294,13 +288,11 @@ const runStartupMigrations = async () => {
     );
   `);
 
-  // Add request_id column directly on messages so we don't need a chat_id lookup
   await pool.query(`
     ALTER TABLE messages
     ADD COLUMN IF NOT EXISTS request_id INTEGER REFERENCES help_requests(id) ON DELETE CASCADE;
   `);
 
-  // Backfill request_id from the chats table for any existing rows
   await pool.query(`
     UPDATE messages m
     SET request_id = c.request_id
@@ -309,18 +301,15 @@ const runStartupMigrations = async () => {
       AND m.request_id IS NULL;
   `);
 
-  // Index for fast per-request message queries
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_messages_request_id ON messages(request_id);
   `);
 
-  // providers_needed column on help_requests (default 1)
   await pool.query(`
     ALTER TABLE help_requests
     ADD COLUMN IF NOT EXISTS providers_needed INTEGER NOT NULL DEFAULT 1;
   `);
 
-  // request_assignments — tracks every assigned provider per request
   await pool.query(`
     CREATE TABLE IF NOT EXISTS request_assignments (
       id SERIAL PRIMARY KEY,
@@ -361,3 +350,4 @@ const startServer = async () => {
 };
 
 void startServer();
+

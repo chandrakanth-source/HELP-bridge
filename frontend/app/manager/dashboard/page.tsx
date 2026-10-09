@@ -209,7 +209,6 @@ export default function ManagerDashboard() {
   );
 }
 
-
 function StatCard({ title, value, description, icon, color }: { title: string; value: string; description: string; icon: React.ReactNode; color: "red" | "blue" | "green" | "purple"; }) {
   const styles = {
     red: {

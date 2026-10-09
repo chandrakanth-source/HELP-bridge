@@ -98,3 +98,4 @@ const updateLocation = async (req, res) => {
 };
 
 module.exports = { getProfile, updateProfile, updateLocation, updateAvailability };
+

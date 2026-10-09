@@ -21,24 +21,19 @@ const KNOWLEDGE_BASE = [
   }
 ];
 
-/**
- * Processes a user chat prompt and returns an AI bot response.
- * Supports environment LLM fallback or domain-specific FAQ/Bargain assistant logic.
- */
 async function getBotResponse(userMessage, context = {}) {
   const prompt = (userMessage || "").toLowerCase();
 
-  // Check matching knowledge base rules
   for (const item of KNOWLEDGE_BASE) {
     if (item.keywords.some((kw) => prompt.includes(kw))) {
       return item.response;
     }
   }
 
-  // Generic intelligent fallback response
   return "I'm here to help with your HelpBridge experience! You can request emergency assistance via the SOS page, negotiate pricing on non-emergency tasks, or track your assigned provider in real time on the live map.";
 }
 
 module.exports = {
   getBotResponse,
 };
+

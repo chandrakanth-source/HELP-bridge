@@ -14,10 +14,8 @@ const { handleChatbotQuery } = require("../controllers/chatbotController");
 const authMiddleware = require("../middleware/authMiddleware");
 const chatMiddleware = require("../middleware/chatMiddleware");
 
-// AI Chatbot endpoint
 router.post("/assistant", handleChatbotQuery);
 
-// Send a message
 router.get(
   "/:requestId/messages/unread",
   authMiddleware,
@@ -37,7 +35,7 @@ router.post(
   sendMessage,
 );
 
-// Get messages
 router.get("/:requestId/messages", authMiddleware, chatMiddleware, getMessages);
 
 module.exports = router;
+

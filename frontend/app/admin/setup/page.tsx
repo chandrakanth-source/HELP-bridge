@@ -17,7 +17,6 @@ export default function AdminSetupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ── Step 1: Verify key locally (non-empty) before showing the form ──────────
   const verifyKey = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!setupKey.trim()) {
@@ -32,7 +31,6 @@ export default function AdminSetupPage() {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  // ── Step 2: Submit the form with the key as a custom header ────────────────
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -49,7 +47,7 @@ export default function AdminSetupPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Secret key is sent as a custom header — the backend validates it.
+
           "x-setup-key": setupKey,
         },
         body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, password: form.password }),
@@ -58,7 +56,7 @@ export default function AdminSetupPage() {
       setTimeout(() => router.push("/login"), 1500);
     } catch (submitError) {
       const msg = submitError instanceof Error ? submitError.message : "Unable to create administrator.";
-      // If the key is wrong the backend returns 403 — go back to key entry.
+
       if (msg.toLowerCase().includes("access denied") || msg.toLowerCase().includes("invalid")) {
         setKeyVerified(false);
         setSetupKey("");
@@ -130,7 +128,7 @@ export default function AdminSetupPage() {
             </button>
           </form>
         ) : (
-          /* ── Step 2: Admin details form ──────────────────────────────────── */
+
           <form onSubmit={submit} className="mt-8 space-y-4">
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800 flex items-center gap-2">
               <ShieldCheck size={15} />
@@ -196,3 +194,4 @@ function Field({
     </label>
   );
 }
+

@@ -10,9 +10,6 @@ const { sendPasswordResetEmail } = require("../services/emailService");
 
 const RESET_TOKEN_EXPIRY = "15m";
 
-// ============================
-// REGISTER
-// ============================
 const register = async (req, res) => {
   try {
     const {
@@ -28,7 +25,6 @@ const register = async (req, res) => {
       role,
     } = req.body;
 
-    // Check required fields
     if (!name?.trim() || !email?.trim() || !phone?.trim() || !password) {
       return res.status(400).json({
         message: "Name, email, phone and password are required",
@@ -52,7 +48,6 @@ const register = async (req, res) => {
         .json({ message: "Enter a valid email address and phone number" });
     }
 
-    // Check if email already exists
     const existingUser = await findUserByEmail(email.trim().toLowerCase());
 
     if (existingUser) {
@@ -61,16 +56,12 @@ const register = async (req, res) => {
       });
     }
 
-    // Hash password
     const password_hash = await bcrypt.hash(password, 10);
 
-    // Ordinary accounts can both request and provide help. Keep manager/admin
-    // roles available for their dedicated registration flows.
     const accountRole = ["provider", "seeker", "user"].includes(role)
       ? "user"
       : role;
 
-    // Create user
     const user = await createUser({
       name,
       email: email.trim().toLowerCase(),
@@ -107,21 +98,16 @@ const register = async (req, res) => {
   }
 };
 
-// ============================
-// LOGIN
-// ============================
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check required fields
     if (!email?.trim() || !password) {
       return res.status(400).json({
         message: "Email and password are required",
       });
     }
 
-    // Find user
     const user = await findUserByEmail(email.trim().toLowerCase());
 
     if (!user) {
@@ -130,7 +116,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Compare password
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordMatch) {
@@ -148,7 +133,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Create JWT
     const token = jwt.sign(
       {
         id: user.id,
@@ -180,9 +164,6 @@ const login = async (req, res) => {
   }
 };
 
-// ============================
-// REQUEST PASSWORD RESET
-// ============================
 const requestPasswordReset = async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
@@ -218,9 +199,6 @@ const requestPasswordReset = async (req, res) => {
   }
 };
 
-// ============================
-// RESET PASSWORD
-// ============================
 const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
@@ -274,3 +252,4 @@ module.exports = {
   requestPasswordReset,
   resetPassword,
 };
+

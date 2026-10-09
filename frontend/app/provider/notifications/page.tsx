@@ -62,8 +62,7 @@ export default function ProviderNotificationsPage() {
   };
 
   useEffect(() => {
-    // Notification data is loaded after mount so the page can render its loading state first.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     void loadNotifications();
   }, []);
 
@@ -120,3 +119,4 @@ export default function ProviderNotificationsPage() {
     </main>
   );
 }
+

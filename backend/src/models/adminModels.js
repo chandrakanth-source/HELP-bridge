@@ -38,3 +38,4 @@ module.exports = {
   getManagerApplications,
   updateManagerVerification,
 };
+

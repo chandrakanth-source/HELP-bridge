@@ -63,3 +63,4 @@ export default function NonEmergencyRequestsPage() {
 
 function Summary({ title, value }: { title: string; value: string }) { return <div className="rounded-xl border bg-white p-5 shadow-sm"><p className="text-3xl font-bold text-slate-800">{value}</p><p className="mt-1 text-sm font-semibold text-slate-600">{title}</p></div>; }
 function StatusBadge({ status }: { status: Status }) { const tone = status === "completed" ? "bg-green-50 text-green-700" : status === "pending_verification" ? "bg-orange-50 text-orange-700" : status === "in_progress" || status === "accepted" ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600"; return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ${tone}`}>{status === "completed" ? <CheckCircle size={13} /> : <Clock3 size={13} />}{statusLabels[status]}</span>; }
+

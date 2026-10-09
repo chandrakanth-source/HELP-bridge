@@ -56,13 +56,11 @@ export default function SeekerChatPage() {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
 
-    // Decode user id
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       setUserId(payload.id ?? payload.userId ?? null);
     } catch { /* ignore */ }
 
-    // Load request info
     apiRequest(`/help-requests/${requestId}`, {}, token)
       .then((data) => {
         setRequestInfo(data.request);
@@ -73,14 +71,12 @@ export default function SeekerChatPage() {
         setLoadingInfo(false);
       });
 
-    // Load message history
     apiRequest(`/chat/${requestId}/messages`, {}, token)
       .then((data) => {
         setMessages(data.messages || []);
       })
       .catch(() => { /* ignore — chat may not be available yet */ });
 
-    // Connect socket
     socket.auth = { token };
     socket.connect();
     socket.emit("join_request", requestId);
@@ -91,7 +87,6 @@ export default function SeekerChatPage() {
     };
     socket.on("receive_message", onMsg);
 
-    // Mark messages read
     void apiRequest(`/chat/${requestId}/messages/read`, { method: "PUT" }, token).catch(() => {});
 
     return () => {
@@ -299,3 +294,4 @@ export default function SeekerChatPage() {
     </div>
   );
 }
+

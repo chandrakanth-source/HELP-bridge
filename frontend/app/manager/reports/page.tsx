@@ -112,3 +112,4 @@ export default function ReportsPage() {
 }
 
 function Metric({ title, value, icon, tone }: { title: string; value: number; icon: React.ReactNode; tone: "blue" | "amber" | "green" | "violet" }) { const styles = { blue: "bg-blue-50 text-blue-600", amber: "bg-amber-50 text-amber-600", green: "bg-green-50 text-green-600", violet: "bg-violet-50 text-violet-600" }; return <div className="flex items-center justify-between rounded-xl border bg-white p-5 shadow-sm"><div><p className="text-3xl font-bold text-slate-800">{value}</p><p className="mt-1 text-sm font-semibold text-slate-600">{title}</p></div><div className={`flex h-11 w-11 items-center justify-center rounded-full ${styles[tone]}`}>{icon}</div></div>; }
+

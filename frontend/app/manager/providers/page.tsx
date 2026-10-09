@@ -124,3 +124,4 @@ function StatusBadge({ status }: { status: "Verified" | "Pending" | "Inactive" }
   const styles = { Verified: "bg-green-50 text-green-700", Pending: "bg-purple-50 text-purple-700", Inactive: "bg-orange-50 text-orange-700" };
   return <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${styles[status]}`}>{status}</span>;
 }
+

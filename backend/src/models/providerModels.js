@@ -1,6 +1,5 @@
 const pool = require("../config/database");
 
-// Get approved requests available for providers
 const getApprovedRequests = async (providerId) => {
   const query = `
         SELECT
@@ -48,7 +47,6 @@ const getProviderRequests = async (providerId) => {
   return result.rows;
 };
 
-// Get one approved request
 const getApprovedRequestById = async (id) => {
   const query = `
         SELECT
@@ -77,14 +75,12 @@ const getApprovedRequestById = async (id) => {
   return result.rows[0];
 };
 
-// Accept a help request
 const acceptHelpRequest = async (requestId, providerId) => {
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    // Assign provider and change status
     const requestQuery = `
             UPDATE help_requests
             SET
@@ -108,7 +104,6 @@ const acceptHelpRequest = async (requestId, providerId) => {
       throw new Error("Request is not available for acceptance");
     }
 
-    // Mark busy (KNN assignment may already have set busy before the provider accepts)
     const providerQuery = `
             UPDATE users
             SET
@@ -139,7 +134,7 @@ const acceptHelpRequest = async (requestId, providerId) => {
     client.release();
   }
 };
-// Start helping the requester
+
 const startHelpRequest = async (requestId, providerId) => {
   const query = `
         UPDATE help_requests
@@ -156,7 +151,7 @@ const startHelpRequest = async (requestId, providerId) => {
 
   return result.rows[0];
 };
-// Complete a help request
+
 const completeHelpRequest = async (requestId, providerId) => {
   const query = `
         UPDATE help_requests
@@ -182,3 +177,4 @@ module.exports = {
   getApprovedRequestById,
   acceptHelpRequest,
 };
+

@@ -32,7 +32,6 @@ export default function GpsTracker({ onLocationUpdate }: GpsTrackerProps) {
           onLocationUpdate({ latitude, longitude });
         }
 
-        // Sync with backend API
         const token = localStorage.getItem("token");
         if (token) {
           try {
@@ -56,7 +55,7 @@ export default function GpsTracker({ onLocationUpdate }: GpsTrackerProps) {
 
   useEffect(() => {
     requestGPS();
-    const interval = setInterval(requestGPS, 30000); // refresh every 30 seconds
+    const interval = setInterval(requestGPS, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -96,3 +95,4 @@ export default function GpsTracker({ onLocationUpdate }: GpsTrackerProps) {
     </div>
   );
 }
+

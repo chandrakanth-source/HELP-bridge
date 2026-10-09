@@ -178,12 +178,10 @@ export default function SeekerTrackingPage() {
   const isCompleted = tracking.status === "completed";
   const isEnRoute  = tracking.status === "accepted";
 
-  // Google Maps turn-by-turn directions URL
   const directionsUrl = provLat && provLon
     ? `https://www.google.com/maps/dir/?api=1&origin=${provLat},${provLon}&destination=${seekerLat},${seekerLon}&travelmode=driving`
     : `https://www.google.com/maps/dir/?api=1&destination=${seekerLat},${seekerLon}&travelmode=driving`;
 
-  // Build map iframe src: use Google Maps Embed Directions if API key present, else OSM
   const buildMapSrc = (): string => {
     if (provLat && provLon) {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -437,3 +435,4 @@ export default function SeekerTrackingPage() {
     </div>
   );
 }
+

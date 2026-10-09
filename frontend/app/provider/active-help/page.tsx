@@ -160,7 +160,6 @@ function LegacyActiveHelpPage() {
 
         </div>
 
-
         {/* NAVIGATION */}
 
         <nav className="px-3 py-6">
@@ -217,7 +216,6 @@ function LegacyActiveHelpPage() {
 
         </nav>
 
-
         {/* LOGOUT */}
 
         <div className="absolute bottom-0 left-3 right-3 border-t border-white/10 py-5">
@@ -234,7 +232,6 @@ function LegacyActiveHelpPage() {
 
       </aside>
 
-
       {/* MOBILE OVERLAY */}
 
       {sidebarOpen && (
@@ -243,7 +240,6 @@ function LegacyActiveHelpPage() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
 
       {/* =====================================================
           MAIN
@@ -262,7 +258,6 @@ function LegacyActiveHelpPage() {
             <Menu size={25} />
           </button>
 
-
           <div className="ml-auto flex items-center gap-6">
 
             <button className="relative text-slate-600">
@@ -274,7 +269,6 @@ function LegacyActiveHelpPage() {
               </span>
 
             </button>
-
 
             <div className="flex items-center gap-3">
 
@@ -300,7 +294,6 @@ function LegacyActiveHelpPage() {
 
         </header>
 
-
         {/* =====================================================
             CONTENT
         ===================================================== */}
@@ -317,7 +310,6 @@ function LegacyActiveHelpPage() {
             Back to Dashboard
           </Link>
 
-
           {/* TITLE */}
 
           <div className="mt-5">
@@ -331,7 +323,6 @@ function LegacyActiveHelpPage() {
             </p>
 
           </div>
-
 
           {/* =====================================================
               REQUEST HEADER
@@ -350,7 +341,6 @@ function LegacyActiveHelpPage() {
                   <Droplets size={32} />
 
                 </div>
-
 
                 <div>
 
@@ -373,7 +363,6 @@ function LegacyActiveHelpPage() {
 
               </div>
 
-
               {/* DETAILS */}
 
               <div className="grid gap-5 sm:grid-cols-3 xl:min-w-[550px]">
@@ -390,7 +379,6 @@ function LegacyActiveHelpPage() {
 
                 </div>
 
-
                 <div>
 
                   <p className="text-xs text-slate-400">
@@ -402,7 +390,6 @@ function LegacyActiveHelpPage() {
                   </p>
 
                 </div>
-
 
                 <div>
 
@@ -422,20 +409,17 @@ function LegacyActiveHelpPage() {
 
           </section>
 
-
           {/* =====================================================
               GRID
           ===================================================== */}
 
           <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_420px]">
 
-
             {/* =================================================
                 LEFT SIDE
             ================================================= */}
 
             <div className="space-y-6">
-
 
               {/* LIVE MAP */}
 
@@ -454,7 +438,6 @@ function LegacyActiveHelpPage() {
 
                   </h3>
 
-
                   <div className="flex items-center gap-2 text-xs font-semibold text-green-600">
 
                     <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-green-500" />
@@ -464,7 +447,6 @@ function LegacyActiveHelpPage() {
                   </div>
 
                 </div>
-
 
                 {/* MAP */}
 
@@ -481,7 +463,6 @@ function LegacyActiveHelpPage() {
                     }}
                   />
 
-
                   {/* ROADS */}
 
                   <div className="absolute left-[5%] top-[35%] h-[5px] w-[90%] rotate-[12deg] rounded-full bg-white" />
@@ -492,11 +473,9 @@ function LegacyActiveHelpPage() {
 
                   <div className="absolute left-[20%] top-[10%] h-[80%] w-[4px] -rotate-[35deg] rounded-full bg-white" />
 
-
                   {/* ROUTE */}
 
                   <div className="absolute left-[22%] top-[35%] h-[135px] w-[270px] rotate-[8deg] rounded-full border-[5px] border-blue-500 border-r-transparent border-b-transparent" />
-
 
                   {/* PROVIDER */}
 
@@ -507,7 +486,6 @@ function LegacyActiveHelpPage() {
                       <Navigation size={20} />
 
                     </div>
-
 
                     <div className="absolute left-8 top-1 whitespace-nowrap rounded-lg bg-white px-3 py-2 text-xs font-bold shadow-md">
 
@@ -521,7 +499,6 @@ function LegacyActiveHelpPage() {
 
                   </div>
 
-
                   {/* SEEKER */}
 
                   <div className="absolute right-[20%] top-[28%]">
@@ -531,7 +508,6 @@ function LegacyActiveHelpPage() {
                       <MapPin size={22} />
 
                     </div>
-
 
                     <div className="absolute right-8 top-1 whitespace-nowrap rounded-lg bg-white px-3 py-2 text-xs font-bold shadow-md">
 
@@ -544,7 +520,6 @@ function LegacyActiveHelpPage() {
                     </div>
 
                   </div>
-
 
                   {/* DISTANCE */}
 
@@ -561,7 +536,6 @@ function LegacyActiveHelpPage() {
                   </div>
 
                 </div>
-
 
                 {/* MAP INFO */}
 
@@ -587,7 +561,6 @@ function LegacyActiveHelpPage() {
 
                   </div>
 
-
                   <div className="flex items-center gap-3">
 
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-600">
@@ -608,7 +581,6 @@ function LegacyActiveHelpPage() {
 
                   </div>
 
-
                   <button className="flex items-center justify-center gap-2 rounded-lg border border-blue-300 px-4 py-2 text-sm font-bold text-blue-600 hover:bg-blue-50">
 
                     <Navigation size={17} />
@@ -620,7 +592,6 @@ function LegacyActiveHelpPage() {
                 </div>
 
               </section>
-
 
               {/* COMMUNICATION */}
 
@@ -640,7 +611,6 @@ function LegacyActiveHelpPage() {
                   </h3>
 
                 </div>
-
 
                 <div className="h-[330px] overflow-y-auto p-5">
 
@@ -689,7 +659,6 @@ function LegacyActiveHelpPage() {
 
                 </div>
 
-
                 {/* MESSAGE INPUT */}
 
                 <div className="border-t p-4">
@@ -711,7 +680,6 @@ function LegacyActiveHelpPage() {
                       className="flex-1 rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
 
-
                     <button
                       onClick={sendMessage}
                       className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700"
@@ -729,13 +697,11 @@ function LegacyActiveHelpPage() {
 
             </div>
 
-
             {/* =================================================
                 RIGHT SIDE
             ================================================= */}
 
             <div className="space-y-6">
-
 
               {/* STATUS */}
 
@@ -747,11 +713,9 @@ function LegacyActiveHelpPage() {
                     Request Status
                   </h3>
 
-
                   <StatusBadge status={helpStatus} />
 
                 </div>
-
 
                 <div className="mt-6">
 
@@ -772,7 +736,6 @@ function LegacyActiveHelpPage() {
                           : "w-[76%]"
                       }`}
                     />
-
 
                     <div className="relative flex justify-between">
 
@@ -824,7 +787,6 @@ function LegacyActiveHelpPage() {
 
               </section>
 
-
               {/* SEEKER DETAILS */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -833,13 +795,11 @@ function LegacyActiveHelpPage() {
                   Help Seeker Details
                 </h3>
 
-
                 <div className="mt-5 flex items-center gap-4">
 
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
                     RK
                   </div>
-
 
                   <div>
 
@@ -866,7 +826,6 @@ function LegacyActiveHelpPage() {
 
                 </div>
 
-
                 <div className="mt-5 grid grid-cols-2 gap-3">
 
                   <button className="flex items-center justify-center gap-2 rounded-lg border border-blue-300 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50">
@@ -876,7 +835,6 @@ function LegacyActiveHelpPage() {
                     Call
 
                   </button>
-
 
                   <button className="flex items-center justify-center gap-2 rounded-lg border border-blue-300 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50">
 
@@ -890,7 +848,6 @@ function LegacyActiveHelpPage() {
 
               </section>
 
-
               {/* ACTIONS */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -899,9 +856,7 @@ function LegacyActiveHelpPage() {
                   Actions
                 </h3>
 
-
                 <div className="mt-4 space-y-3">
-
 
                   {/* START HELP */}
 
@@ -934,7 +889,6 @@ function LegacyActiveHelpPage() {
 
                   )}
 
-
                   {/* REQUEST ASSISTANCE */}
 
                   <button className="flex w-full items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-left hover:bg-yellow-100">
@@ -958,7 +912,6 @@ function LegacyActiveHelpPage() {
                     </div>
 
                   </button>
-
 
                   {/* COMPLETE */}
 
@@ -990,7 +943,6 @@ function LegacyActiveHelpPage() {
                     </button>
 
                   )}
-
 
                   {helpStatus === "Completed" && (
 
@@ -1025,7 +977,6 @@ function LegacyActiveHelpPage() {
 
               </section>
 
-
               {/* PAYMENT */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -1033,7 +984,6 @@ function LegacyActiveHelpPage() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Payment Information
                 </h3>
-
 
                 <div className="mt-5 grid grid-cols-3 divide-x">
 
@@ -1049,7 +999,6 @@ function LegacyActiveHelpPage() {
 
                   </div>
 
-
                   <div className="px-3">
 
                     <p className="text-[10px] text-slate-400">
@@ -1061,7 +1010,6 @@ function LegacyActiveHelpPage() {
                     </p>
 
                   </div>
-
 
                   <div className="pl-3">
 
@@ -1077,7 +1025,6 @@ function LegacyActiveHelpPage() {
 
                 </div>
 
-
                 <div className="mt-5 flex items-center justify-between border-t pt-4">
 
                   <span className="text-xs text-slate-500">
@@ -1090,13 +1037,11 @@ function LegacyActiveHelpPage() {
 
                 </div>
 
-
                 <p className="mt-3 text-[10px] text-slate-400">
                   Payment will be released after the help is successfully completed.
                 </p>
 
               </section>
-
 
               {/* EMERGENCY */}
 
@@ -1146,11 +1091,6 @@ function LegacyActiveHelpPage() {
   );
 }
 
-
-/* =====================================================
-   SIDEBAR ITEM
-===================================================== */
-
 function SidebarItem({
   href,
   icon,
@@ -1184,7 +1124,6 @@ function SidebarItem({
 
       </span>
 
-
       {badge && (
         <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold">
           {badge}
@@ -1194,11 +1133,6 @@ function SidebarItem({
     </Link>
   );
 }
-
-
-/* =====================================================
-   STATUS BADGE
-===================================================== */
 
 function StatusBadge({
   status,
@@ -1225,11 +1159,6 @@ function StatusBadge({
     </span>
   );
 }
-
-
-/* =====================================================
-   PROGRESS STEP
-===================================================== */
 
 function ProgressStep({
   active,
@@ -1260,7 +1189,6 @@ function ProgressStep({
 
       </div>
 
-
       <p
         className={`mt-2 text-center text-[10px] font-bold ${
           active
@@ -1270,7 +1198,6 @@ function ProgressStep({
       >
         {label}
       </p>
-
 
       <p className="mt-1 text-[9px] text-slate-400">
         {time}

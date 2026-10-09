@@ -1,6 +1,5 @@
 const pool = require("../config/database");
 
-// Create a new bargain offer or counter-offer
 const createBargainOffer = async (offerData) => {
   const {
     request_id,
@@ -38,7 +37,6 @@ const createBargainOffer = async (offerData) => {
   return result.rows[0];
 };
 
-// Get bargain history for a request
 const getBargainHistory = async (requestId) => {
   const query = `
     SELECT
@@ -56,13 +54,11 @@ const getBargainHistory = async (requestId) => {
   return result.rows;
 };
 
-// Accept a bargain offer and set agreed price on help request
 const acceptBargainOffer = async (offerId) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
-    // 1. Mark offer as accepted
     const offerQuery = `
       UPDATE bargain_offers
       SET status = 'accepted'
@@ -76,13 +72,11 @@ const acceptBargainOffer = async (offerId) => {
 
     const offer = offerResult.rows[0];
 
-    // 2. Mark other pending offers for this request as rejected
     await client.query(
       `UPDATE bargain_offers SET status = 'rejected' WHERE request_id = $1 AND id <> $2 AND status = 'pending'`,
       [offer.request_id, offerId]
     );
 
-    // 3. Lock help_requests record with agreed price and assigned provider
     const requestQuery = `
       UPDATE help_requests
       SET
@@ -99,7 +93,6 @@ const acceptBargainOffer = async (offerId) => {
       offer.request_id,
     ]);
 
-    // 4. Update provider availability status
     await client.query(
       `UPDATE users SET availability_status = 'busy', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [offer.provider_id]
@@ -119,7 +112,6 @@ const acceptBargainOffer = async (offerId) => {
   }
 };
 
-// Reject bargain offer
 const rejectBargainOffer = async (offerId) => {
   const query = `
     UPDATE bargain_offers
@@ -138,3 +130,4 @@ module.exports = {
   acceptBargainOffer,
   rejectBargainOffer,
 };
+

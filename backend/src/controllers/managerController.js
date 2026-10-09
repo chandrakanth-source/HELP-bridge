@@ -309,7 +309,6 @@ const getNearbyProviders = async (req, res) => {
   }
 };
 
-// Approve a request and broadcast it to available help providers.
 const approveRequest = async (req, res) => {
   try {
     const { id } = req.params;
@@ -339,7 +338,6 @@ const approveRequest = async (req, res) => {
       `Your help request "${result.rows[0].title}" has been approved by the manager.`,
     );
 
-    // Broadcast notification to all registered providers/users ready to help in HelpBridge (Requirement 2)
     const providersRes = await pool.query(
       `
       SELECT id
@@ -376,7 +374,6 @@ const approveRequest = async (req, res) => {
   }
 };
 
-// Reject an emergency request
 const rejectRequest = async (req, res) => {
   try {
     const { id } = req.params;
@@ -567,3 +564,4 @@ module.exports = {
   completeRequest,
   getDashboardStats,
 };
+

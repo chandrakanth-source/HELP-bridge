@@ -1,9 +1,5 @@
 const pool = require("../config/database");
 
-/**
- * Ensure a chats row exists for this request and return its id.
- * This is needed because messages.chat_id is NOT NULL in the existing schema.
- */
 const getOrCreateChatId = async (requestId) => {
   const existing = await pool.query(
     `SELECT id FROM chats WHERE request_id = $1`,
@@ -20,10 +16,6 @@ const getOrCreateChatId = async (requestId) => {
   return created.rows[0].id;
 };
 
-/**
- * Insert a message. Sets both chat_id (required by schema) and request_id
- * (added by migration for fast lookups).
- */
 const createMessage = async (requestId, senderId, message) => {
   const chatId = await getOrCreateChatId(requestId);
 
@@ -36,7 +28,6 @@ const createMessage = async (requestId, senderId, message) => {
   return result.rows[0];
 };
 
-/** Fetch all messages for a request ordered oldest-first. */
 const getMessagesByRequestId = async (requestId) => {
   const result = await pool.query(
     `SELECT
@@ -87,3 +78,4 @@ module.exports = {
   markMessagesAsRead,
   getUnreadMessageCount,
 };
+

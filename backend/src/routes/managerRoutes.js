@@ -23,7 +23,6 @@ const {
 const authMiddleware = require("../middleware/authMiddleware");
 const managerMiddleware = require("../middleware/managerMiddleware");
 
-// Get pending emergency requests
 router.get(
   "/requests/pending",
   authMiddleware,
@@ -89,7 +88,6 @@ router.get(
   getNearbyProviders,
 );
 
-// Approve emergency request
 router.put(
   "/requests/:id/approve",
   authMiddleware,
@@ -97,7 +95,6 @@ router.put(
   approveRequest,
 );
 
-// Reject emergency request
 router.put(
   "/requests/:id/reject",
   authMiddleware,
@@ -119,7 +116,6 @@ router.put(
   completeRequest,
 );
 
-// Dashboard stats
 router.get(
   "/dashboard/stats",
   authMiddleware,
@@ -128,3 +124,4 @@ router.get(
 );
 
 module.exports = router;
+

@@ -7,7 +7,6 @@ const {
 } = require("../models/bargainModel");
 const { createNotification } = require("../models/notificationModel");
 
-// Submit a bargain offer (Seeker or Provider)
 const submitOffer = async (req, res) => {
   try {
     const { request_id, provider_id, offered_price, round_number } = req.body;
@@ -17,7 +16,6 @@ const submitOffer = async (req, res) => {
       return res.status(400).json({ message: "Invalid request or price." });
     }
 
-    // Check request existence
     const reqResult = await pool.query(`SELECT * FROM help_requests WHERE id = $1`, [request_id]);
     if (reqResult.rows.length === 0) {
       return res.status(404).json({ message: "Help request not found." });
@@ -40,7 +38,6 @@ const submitOffer = async (req, res) => {
       });
     }
 
-    // Update status to bargaining if needed
     if (helpReq.status === 'approved' || helpReq.status === 'pending_verification') {
       await pool.query(`UPDATE help_requests SET status = 'bargaining' WHERE id = $1`, [request_id]);
     }
@@ -54,7 +51,6 @@ const submitOffer = async (req, res) => {
       round_number: round_number ? parseInt(round_number) : 1,
     });
 
-    // Notify counterpart
     const targetUserId = isSeeker ? effectiveProviderId : seeker_id;
     await createNotification(
       targetUserId,
@@ -71,7 +67,6 @@ const submitOffer = async (req, res) => {
   }
 };
 
-// Get offer history
 const getHistory = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -83,13 +78,11 @@ const getHistory = async (req, res) => {
   }
 };
 
-// Accept an offer (Requirement 3: Fix price and assign)
 const acceptOffer = async (req, res) => {
   try {
     const { offerId } = req.params;
     const result = await acceptBargainOffer(offerId);
 
-    // Send notifications to seeker & provider
     await createNotification(
       result.request.requester_id,
       result.request.id,
@@ -117,7 +110,6 @@ const acceptOffer = async (req, res) => {
   }
 };
 
-// Reject offer & assign new provider fallback loop (Requirement 4)
 const rejectOffer = async (req, res) => {
   try {
     const { offerId } = req.params;
@@ -127,7 +119,6 @@ const rejectOffer = async (req, res) => {
       return res.status(404).json({ message: "Bargain offer not found" });
     }
 
-    // Requirement 4 fallback: If bargain does not fix, reset request status so a new provider can bargain/accept
     const requestResult = await pool.query(
       `
       UPDATE help_requests
@@ -143,7 +134,6 @@ const rejectOffer = async (req, res) => {
 
     const updatedRequest = requestResult.rows[0];
 
-    // Notify provider that offer was rejected
     await createNotification(
       offer.provider_id,
       offer.request_id,
@@ -168,3 +158,4 @@ module.exports = {
   acceptOffer,
   rejectOffer,
 };
+

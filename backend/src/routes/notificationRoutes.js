@@ -13,3 +13,4 @@ router.get("/", authMiddleware, getNotifications);
 router.patch("/:id/read", authMiddleware, markAsRead);
 
 module.exports = router;
+

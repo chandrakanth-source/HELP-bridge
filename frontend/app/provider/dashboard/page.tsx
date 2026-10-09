@@ -74,7 +74,6 @@ function LegacyProviderDashboard() {
 
         </div>
 
-
         {/* NAVIGATION */}
 
         <nav className="px-3 py-6">
@@ -142,7 +141,6 @@ function LegacyProviderDashboard() {
 
         </nav>
 
-
         {/* LOGOUT */}
 
         <div className="absolute bottom-0 left-3 right-3 border-t border-white/10 py-5">
@@ -159,7 +157,6 @@ function LegacyProviderDashboard() {
 
       </aside>
 
-
       {/* MOBILE OVERLAY */}
 
       {sidebarOpen && (
@@ -168,7 +165,6 @@ function LegacyProviderDashboard() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
 
       {/* ================= MAIN ================= */}
 
@@ -185,7 +181,6 @@ function LegacyProviderDashboard() {
             <Menu size={25} />
           </button>
 
-
           <div className="ml-auto flex items-center gap-6">
 
             {/* NOTIFICATION */}
@@ -199,7 +194,6 @@ function LegacyProviderDashboard() {
               </span>
 
             </button>
-
 
             {/* PROFILE */}
 
@@ -227,7 +221,6 @@ function LegacyProviderDashboard() {
 
         </header>
 
-
         {/* ================= PAGE CONTENT ================= */}
 
         <div className="p-5 sm:p-8">
@@ -247,7 +240,6 @@ function LegacyProviderDashboard() {
               </p>
 
             </div>
-
 
             {/* AVAILABILITY */}
 
@@ -283,7 +275,6 @@ function LegacyProviderDashboard() {
 
               </div>
 
-
               {/* TOGGLE */}
 
               <button
@@ -308,7 +299,6 @@ function LegacyProviderDashboard() {
             </div>
 
           </div>
-
 
           {/* ================= STATISTICS ================= */}
 
@@ -348,11 +338,9 @@ function LegacyProviderDashboard() {
 
           </div>
 
-
           {/* ================= MAIN GRID ================= */}
 
           <div className="mt-7 grid gap-6 xl:grid-cols-[1fr_390px]">
-
 
             {/* LEFT SIDE */}
 
@@ -378,7 +366,6 @@ function LegacyProviderDashboard() {
 
                 </div>
 
-
                 <div className="mt-5 space-y-4">
 
                   {/* REQUEST 1 */}
@@ -393,7 +380,6 @@ function LegacyProviderDashboard() {
                     priority="High Priority"
                     time="5 min ago"
                   />
-
 
                   {/* REQUEST 2 */}
 
@@ -411,7 +397,6 @@ function LegacyProviderDashboard() {
                 </div>
 
               </section>
-
 
               {/* SAFETY BANNER */}
 
@@ -438,7 +423,6 @@ function LegacyProviderDashboard() {
 
                 </div>
 
-
                 <button className="rounded-lg border border-blue-400 bg-white px-5 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50">
                   View Safety Guidelines
                 </button>
@@ -446,7 +430,6 @@ function LegacyProviderDashboard() {
               </div>
 
             </div>
-
 
             {/* RIGHT SIDE */}
 
@@ -459,7 +442,6 @@ function LegacyProviderDashboard() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Availability Status
                 </h3>
-
 
                 <div className="mt-4 rounded-xl border border-green-200 bg-green-50/50 p-5">
 
@@ -483,7 +465,6 @@ function LegacyProviderDashboard() {
 
                   </div>
 
-
                   <button
                     onClick={() => setAvailable(false)}
                     className="mt-5 w-full rounded-lg border border-green-300 bg-white py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50"
@@ -495,7 +476,6 @@ function LegacyProviderDashboard() {
 
               </section>
 
-
               {/* TODAY'S SUMMARY */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -503,7 +483,6 @@ function LegacyProviderDashboard() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Today&apos;s Summary
                 </h3>
-
 
                 <div className="mt-4 divide-y">
 
@@ -535,7 +514,6 @@ function LegacyProviderDashboard() {
 
               </section>
 
-
               {/* UPCOMING TASKS */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -543,7 +521,6 @@ function LegacyProviderDashboard() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Upcoming Tasks
                 </h3>
-
 
                 <div className="mt-4 rounded-xl bg-slate-50 p-4">
 
@@ -574,7 +551,6 @@ function LegacyProviderDashboard() {
 
                     </div>
 
-
                     <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600">
                       Upcoming
                     </span>
@@ -596,11 +572,6 @@ function LegacyProviderDashboard() {
     </div>
   );
 }
-
-
-/* ================================================= */
-/* SIDEBAR ITEM */
-/* ================================================= */
 
 function SidebarItem({
   href,
@@ -632,7 +603,6 @@ function SidebarItem({
         {label}
       </span>
 
-
       {badge && (
         <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
           {badge}
@@ -642,11 +612,6 @@ function SidebarItem({
     </Link>
   );
 }
-
-
-/* ================================================= */
-/* STAT CARD */
-/* ================================================= */
 
 function StatCard({
   icon,
@@ -705,7 +670,6 @@ function StatCard({
 
         </div>
 
-
         <div
           className={`flex h-12 w-12 items-center justify-center rounded-full ${styles[type].icon}`}
         >
@@ -717,11 +681,6 @@ function StatCard({
     </div>
   );
 }
-
-
-/* ================================================= */
-/* REQUEST CARD */
-/* ================================================= */
 
 function RequestCard({
   type,
@@ -772,7 +731,6 @@ function RequestCard({
 
           </div>
 
-
           <div>
 
             {/* TYPE */}
@@ -789,13 +747,11 @@ function RequestCard({
                 : "Non-Emergency"}
             </span>
 
-
             {/* TITLE */}
 
             <h4 className="mt-2 text-base font-bold text-slate-800">
               {title}
             </h4>
-
 
             {/* LOCATION */}
 
@@ -816,13 +772,11 @@ function RequestCard({
 
             </div>
 
-
             {/* DESCRIPTION */}
 
             <p className="mt-2 max-w-[550px] text-xs text-slate-500">
               {description}
             </p>
-
 
             {/* PRIORITY + TIME */}
 
@@ -849,7 +803,6 @@ function RequestCard({
 
         </div>
 
-
         {/* PAYMENT + ACTIONS */}
 
         <div className="flex flex-col gap-4 lg:min-w-[205px]">
@@ -871,7 +824,6 @@ function RequestCard({
             </p>
 
           </div>
-
 
           {/* BUTTONS */}
 
@@ -897,11 +849,6 @@ function RequestCard({
     </div>
   );
 }
-
-
-/* ================================================= */
-/* SUMMARY ROW */
-/* ================================================= */
 
 function SummaryRow({
   label,

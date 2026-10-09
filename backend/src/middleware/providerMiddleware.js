@@ -6,8 +6,6 @@ const providerMiddleware = (req, res, next) => {
       });
     }
 
-    // Allow all authenticated users — HelpBridge supports dual-role (seeker can also be a provider)
-    // Only block unauthenticated requests
     next();
   } catch (error) {
     console.error("Provider authorization error:", error);
@@ -19,3 +17,4 @@ const providerMiddleware = (req, res, next) => {
 };
 
 module.exports = providerMiddleware;
+

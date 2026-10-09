@@ -4,7 +4,7 @@ const {
   markMessagesAsRead,
   getUnreadMessageCount,
 } = require("../models/messageModels");
-// Send a message
+
 const getUnreadCount = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -48,10 +48,8 @@ const sendMessage = async (req, res) => {
     const { requestId } = req.params;
     const { message } = req.body;
 
-    // User ID comes from JWT
     const senderId = req.user.id;
 
-    // Validate message
     if (!message || message.trim() === "") {
       return res.status(400).json({
         message: "Message cannot be empty",
@@ -73,7 +71,6 @@ const sendMessage = async (req, res) => {
   }
 };
 
-// Get messages for a request
 const getMessages = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -98,3 +95,4 @@ module.exports = {
   markAsRead,
   getUnreadCount,
 };
+

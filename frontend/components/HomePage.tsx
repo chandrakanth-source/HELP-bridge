@@ -121,7 +121,6 @@ export default function HomePage() {
           </div>
         </div>
 
-
         <div className="mx-auto max-w-6xl px-6 pb-16">
           <div className="grid overflow-hidden rounded-2xl border bg-white shadow-lg md:grid-cols-3">
             <ServiceCard icon={<Siren />} title="Emergency Help" description="Disasters, accidents, medical, blood & more" iconClass="bg-red-50 text-red-500"/>

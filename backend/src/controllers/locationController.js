@@ -1,7 +1,6 @@
 const pool = require("../config/database");
 const { calculateHaversineDistance } = require("../services/knnService");
 
-// Update user's live GPS location
 const updateUserLocation = async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
@@ -19,7 +18,6 @@ const updateUserLocation = async (req, res) => {
     const lat = parseFloat(latitude);
     const lon = parseFloat(longitude);
 
-    // Update users table with latest coordinates and timestamp
     await pool.query(
       `
       UPDATE users
@@ -29,7 +27,6 @@ const updateUserLocation = async (req, res) => {
       [lat, lon, userId]
     );
 
-    // Save entry in locations tracking history table
     await pool.query(
       `
       INSERT INTO locations (user_id, latitude, longitude)
@@ -49,7 +46,6 @@ const updateUserLocation = async (req, res) => {
   }
 };
 
-// Get tracking data for an active request (Requester location & Provider location)
 const getRequestTrackingData = async (req, res) => {
   try {
     const { requestId } = req.params;
@@ -88,7 +84,6 @@ const getRequestTrackingData = async (req, res) => {
 
     const data = result.rows[0];
 
-    // Calculate live distance if provider is assigned and coordinates exist
     let distance_km = null;
     const reqLat = data.requester_live_lat || data.request_latitude;
     const reqLon = data.requester_live_lon || data.request_longitude;
@@ -120,3 +115,4 @@ module.exports = {
   updateUserLocation,
   getRequestTrackingData,
 };
+

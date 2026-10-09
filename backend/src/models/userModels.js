@@ -1,6 +1,5 @@
 const pool = require("../config/database");
 
-// Find user by email
 const findUserByEmail = async (email) => {
   const query = `
         SELECT *
@@ -13,7 +12,6 @@ const findUserByEmail = async (email) => {
   return result.rows[0];
 };
 
-// Find user by ID
 const findUserById = async (id) => {
   const query = `
         SELECT
@@ -39,7 +37,6 @@ const findUserById = async (id) => {
   return result.rows[0];
 };
 
-// Update a user's password
 const updatePassword = async (id, passwordHash) => {
   const query = `
         UPDATE users
@@ -53,7 +50,6 @@ const updatePassword = async (id, passwordHash) => {
   return result.rows[0];
 };
 
-// Create a new user
 const createUser = async (userData) => {
   const {
     name,
@@ -167,3 +163,4 @@ module.exports = {
   updateUserProfile,
   updateUserLocation,
 };
+

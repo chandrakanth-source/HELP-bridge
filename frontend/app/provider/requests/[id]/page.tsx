@@ -34,7 +34,6 @@ function LegacyRequestDetailsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accepted, setAccepted] = useState(false);
 
-  // Mock request data
   const request = {
     id: "SOS-2026-0128",
     type: "Emergency",
@@ -115,7 +114,6 @@ function LegacyRequestDetailsPage() {
 
           </div>
 
-
           <button
             onClick={() => setSidebarOpen(false)}
             className="ml-auto lg:hidden"
@@ -124,7 +122,6 @@ function LegacyRequestDetailsPage() {
           </button>
 
         </div>
-
 
         {/* NAVIGATION */}
 
@@ -182,7 +179,6 @@ function LegacyRequestDetailsPage() {
 
         </nav>
 
-
         {/* LOGOUT */}
 
         <div className="absolute bottom-0 left-3 right-3 border-t border-white/10 py-5">
@@ -199,7 +195,6 @@ function LegacyRequestDetailsPage() {
 
       </aside>
 
-
       {/* MOBILE OVERLAY */}
 
       {sidebarOpen && (
@@ -208,7 +203,6 @@ function LegacyRequestDetailsPage() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
 
       {/* ================================================= */}
       {/* MAIN */}
@@ -227,7 +221,6 @@ function LegacyRequestDetailsPage() {
             <Menu size={25} />
           </button>
 
-
           <div className="ml-auto flex items-center gap-6">
 
             {/* NOTIFICATION */}
@@ -241,7 +234,6 @@ function LegacyRequestDetailsPage() {
               </span>
 
             </button>
-
 
             {/* PROFILE */}
 
@@ -269,7 +261,6 @@ function LegacyRequestDetailsPage() {
 
         </header>
 
-
         {/* ================================================= */}
         {/* PAGE CONTENT */}
         {/* ================================================= */}
@@ -286,7 +277,6 @@ function LegacyRequestDetailsPage() {
             Back to Available Requests
           </Link>
 
-
           {/* TITLE */}
 
           <div className="mt-5">
@@ -301,20 +291,17 @@ function LegacyRequestDetailsPage() {
 
           </div>
 
-
           {/* ================================================= */}
           {/* MAIN GRID */}
           {/* ================================================= */}
 
           <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_390px]">
 
-
             {/* ================================================= */}
             {/* LEFT */}
             {/* ================================================= */}
 
             <div className="space-y-5">
-
 
               {/* REQUEST HEADER */}
 
@@ -327,7 +314,6 @@ function LegacyRequestDetailsPage() {
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500">
                     <Droplets size={32} />
                   </div>
-
 
                   <div className="flex-1">
 
@@ -342,7 +328,6 @@ function LegacyRequestDetailsPage() {
                   </div>
 
                 </div>
-
 
                 {/* REQUEST META */}
 
@@ -375,7 +360,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ================================================= */}
               {/* SEEKER INFORMATION */}
               {/* ================================================= */}
@@ -386,7 +370,6 @@ function LegacyRequestDetailsPage() {
                   icon={<User size={18} />}
                   title="Help Seeker Information"
                 />
-
 
                 <div className="mt-5 divide-y">
 
@@ -429,7 +412,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ================================================= */}
               {/* REQUEST INFORMATION */}
               {/* ================================================= */}
@@ -440,7 +422,6 @@ function LegacyRequestDetailsPage() {
                   icon={<ClipboardList size={18} />}
                   title="Request Information"
                 />
-
 
                 <div className="mt-5 divide-y">
 
@@ -484,7 +465,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* SAFETY WARNING */}
 
               <section className="rounded-xl border border-red-200 bg-red-50 p-5">
@@ -514,13 +494,11 @@ function LegacyRequestDetailsPage() {
 
             </div>
 
-
             {/* ================================================= */}
             {/* RIGHT */}
             {/* ================================================= */}
 
             <div className="space-y-5">
-
 
               {/* REQUEST OVERVIEW */}
 
@@ -529,7 +507,6 @@ function LegacyRequestDetailsPage() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Request Overview
                 </h3>
-
 
                 <div className="mt-4 divide-y">
 
@@ -558,7 +535,6 @@ function LegacyRequestDetailsPage() {
                   />
 
                 </div>
-
 
                 {/* MANAGER VERIFIED */}
 
@@ -590,7 +566,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ================================================= */}
               {/* MAP */}
               {/* ================================================= */}
@@ -612,7 +587,6 @@ function LegacyRequestDetailsPage() {
 
                 </div>
 
-
                 {/* MAP PLACEHOLDER */}
 
                 <div className="relative mx-4 mb-4 h-[270px] overflow-hidden rounded-xl bg-[#e8f0e8]">
@@ -628,7 +602,6 @@ function LegacyRequestDetailsPage() {
                     }}
                   />
 
-
                   {/* Road */}
 
                   <div className="absolute left-[18%] top-[20%] h-[4px] w-[70%] rotate-[25deg] rounded-full bg-white" />
@@ -637,11 +610,9 @@ function LegacyRequestDetailsPage() {
 
                   <div className="absolute left-[45%] top-[15%] h-[80%] w-[4px] rotate-[20deg] rounded-full bg-white" />
 
-
                   {/* Route */}
 
                   <div className="absolute left-[25%] top-[25%] h-[160px] w-[170px] rotate-[25deg] rounded-full border-[5px] border-blue-500 border-r-transparent border-b-transparent" />
-
 
                   {/* Requester */}
 
@@ -659,7 +630,6 @@ function LegacyRequestDetailsPage() {
 
                   </div>
 
-
                   {/* Provider */}
 
                   <div className="absolute bottom-[18%] right-[25%]">
@@ -675,7 +645,6 @@ function LegacyRequestDetailsPage() {
                     </span>
 
                   </div>
-
 
                   {/* Distance */}
 
@@ -695,7 +664,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ADDRESS */}
 
               <section className="rounded-xl border bg-white p-5 shadow-sm">
@@ -711,11 +679,9 @@ function LegacyRequestDetailsPage() {
 
                 </h3>
 
-
                 <p className="mt-4 text-sm leading-6 text-slate-600">
                   {request.address}
                 </p>
-
 
                 <button className="mt-4 flex items-center gap-2 rounded-lg border border-blue-300 px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50">
 
@@ -727,7 +693,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ================================================= */}
               {/* PAYMENT */}
               {/* ================================================= */}
@@ -737,7 +702,6 @@ function LegacyRequestDetailsPage() {
                 <h3 className="text-lg font-bold text-[#10275a]">
                   Trip & Payment Details
                 </h3>
-
 
                 <div className="mt-4 divide-y">
 
@@ -777,7 +741,6 @@ function LegacyRequestDetailsPage() {
 
               </section>
 
-
               {/* ================================================= */}
               {/* ACCEPT */}
               {/* ================================================= */}
@@ -790,7 +753,6 @@ function LegacyRequestDetailsPage() {
                     : "Accept This Request"}
                 </h3>
 
-
                 <p className="mt-3 text-xs leading-5 text-slate-500">
 
                   {accepted
@@ -798,7 +760,6 @@ function LegacyRequestDetailsPage() {
                     : "By accepting, you agree to help the requester and follow our safety guidelines."}
 
                 </p>
-
 
                 {!accepted ? (
 
@@ -842,11 +803,6 @@ function LegacyRequestDetailsPage() {
   );
 }
 
-
-/* ================================================= */
-/* SIDEBAR ITEM */
-/* ================================================= */
-
 function SidebarItem({
   href,
   icon,
@@ -880,7 +836,6 @@ function SidebarItem({
 
       </span>
 
-
       {badge && (
         <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold">
           {badge}
@@ -890,11 +845,6 @@ function SidebarItem({
     </Link>
   );
 }
-
-
-/* ================================================= */
-/* META */
-/* ================================================= */
 
 function Meta({
   label,
@@ -945,11 +895,6 @@ function Meta({
   );
 }
 
-
-/* ================================================= */
-/* SECTION TITLE */
-/* ================================================= */
-
 function SectionTitle({
   icon,
   title,
@@ -970,11 +915,6 @@ function SectionTitle({
     </h3>
   );
 }
-
-
-/* ================================================= */
-/* INFO ROW */
-/* ================================================= */
 
 function InfoRow({
   icon,
@@ -1001,22 +941,15 @@ function InfoRow({
 
       </div>
 
-
       <p className="text-sm font-semibold text-slate-700">
         {value}
       </p>
-
 
       {action}
 
     </div>
   );
 }
-
-
-/* ================================================= */
-/* OVERVIEW ROW */
-/* ================================================= */
 
 function OverviewRow({
   label,
@@ -1056,11 +989,6 @@ function OverviewRow({
     </div>
   );
 }
-
-
-/* ================================================= */
-/* PAYMENT ROW */
-/* ================================================= */
 
 function PaymentRow({
   label,
