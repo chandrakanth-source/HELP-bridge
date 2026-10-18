@@ -4,10 +4,16 @@ export const getActiveToken = (explicitToken?: string | null): string | null => 
   if (typeof window === "undefined") return explicitToken || null;
   const match = window.location.pathname.match(/\/(user|manager|provider|admin)\/(\d+)/);
   if (match && match[2]) {
-    const userToken = localStorage.getItem(`token_${match[2]}`);
+    const userToken =
+      sessionStorage.getItem(`token_${match[2]}`) ||
+      localStorage.getItem(`token_${match[2]}`);
     if (userToken) return userToken;
   }
-  return explicitToken || localStorage.getItem("token");
+  return (
+    explicitToken ||
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token")
+  );
 };
 
 export const getActiveUser = (): any => {
@@ -15,9 +21,13 @@ export const getActiveUser = (): any => {
   try {
     const match = window.location.pathname.match(/\/(user|manager|provider|admin)\/(\d+)/);
     if (match && match[2]) {
-      const userObj = localStorage.getItem(`user_${match[2]}`);
+      const userObj =
+        sessionStorage.getItem(`user_${match[2]}`) ||
+        localStorage.getItem(`user_${match[2]}`);
       if (userObj) return JSON.parse(userObj);
     }
+    const sessionUser = sessionStorage.getItem("user");
+    if (sessionUser) return JSON.parse(sessionUser);
     const defaultUser = localStorage.getItem("user");
     return defaultUser ? JSON.parse(defaultUser) : null;
   } catch {

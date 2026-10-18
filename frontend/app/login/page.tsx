@@ -30,6 +30,11 @@ export default function LoginPage() {
       localStorage.setItem(`token_${data.user.id}`, data.token);
       localStorage.setItem(`user_${data.user.id}`, JSON.stringify(data.user));
 
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem(`token_${data.user.id}`, data.token);
+      sessionStorage.setItem(`user_${data.user.id}`, JSON.stringify(data.user));
+
       const dashboard = data.user.role === "manager"
         ? `/manager/${data.user.id}/dashboard`
         : data.user.role === "admin"

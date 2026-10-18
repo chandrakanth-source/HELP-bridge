@@ -1,32 +1,154 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {Home,Siren,Wrench,ClipboardList,History,MessageSquare,CreditCard,User,Settings,LogOut,Bell,MapPin,Phone,Mail,Droplet,ChevronRight,Headphones,ShieldCheck,Menu,X,ArrowRight,BriefcaseBusiness,} from "lucide-react";
-import { useState } from "react";
+import {
+  Activity,
+  ArrowRight,
+  Bell,
+  BriefcaseBusiness,
+  ChevronRight,
+  Clock3,
+  ClipboardList,
+  CreditCard,
+  DollarSign,
+  Headphones,
+  History,
+  Home,
+  LogOut,
+  MapPin,
+  Menu,
+  MessageSquare,
+  Phone,
+  Mail,
+  ShieldCheck,
+  Siren,
+  User,
+  Wrench,
+  Settings,
+  X,
+} from "lucide-react";
+import { apiRequest, getActiveToken, getActiveUser } from "../../../lib/api";
+import { formatRelativeTime } from "../../../lib/datetime";
+import BargainModal from "../../../components/BargainModal";
+
+const statusLabels: Record<string, string> = {
+  pending_verification: "Pending verification",
+  approved: "Approved",
+  rejected: "Rejected",
+  assigned: "Assigned",
+  accepted: "Accepted",
+  in_progress: "In progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  bargaining: "Negotiating price",
+};
+
+const requestTypeLabels: Record<string, string> = {
+  emergency: "Emergency",
+  non_emergency: "Non-emergency",
+};
+
+const statusClassMap: Record<string, string> = {
+  pending_verification: "bg-amber-50 text-amber-700 border-amber-200",
+  approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  rejected: "bg-rose-50 text-rose-700 border-rose-200",
+  assigned: "bg-blue-50 text-blue-700 border-blue-200",
+  accepted: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  in_progress: "bg-cyan-50 text-cyan-700 border-cyan-200",
+  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  cancelled: "bg-slate-200 text-slate-700 border-slate-300",
+  bargaining: "bg-amber-50 text-amber-800 border-amber-300",
+};
+
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [bargainRequestId, setBargainRequestId] = useState<number | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
   const pathname = usePathname();
   const userId = pathname.match(/^\/user\/(\d+)/)?.[1];
   const userPrefix = userId ? `/user/${userId}` : "/user";
   const providerPrefix = userId ? `/provider/${userId}` : "/provider";
+
+  useEffect(() => {
+    const user = getActiveUser();
+    if (user) setCurrentUser(user);
+
+    const loadRequests = async () => {
+      try {
+        const token = getActiveToken();
+        if (!token) {
+          setError("Please login first.");
+          setLoading(false);
+          return;
+        }
+
+        const data = await apiRequest("/help-requests/my", {}, token);
+        setRequests(Array.isArray(data.requests) ? data.requests : []);
+      } catch (loadError) {
+        console.error(loadError);
+        setError(loadError instanceof Error ? loadError.message : "Unable to load requests.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRequests();
+  }, []);
+
+  const stats = useMemo(() => {
+    const active = requests.filter((r) =>
+      ["pending_verification", "approved", "assigned", "accepted", "in_progress"].includes(r.status)
+    ).length;
+    const emergency = requests.filter((r) => r.request_type === "emergency").length;
+    const completed = requests.filter((r) => r.status === "completed").length;
+
+    return { total: requests.length, active, emergency, completed };
+  }, [requests]);
+
+  const activeAssignedRequests = requests.filter((r) =>
+    ["assigned", "accepted", "in_progress"].includes(r.status)
+  );
+
+  const displayName = currentUser?.name || "Member";
+  const initial = displayName.charAt(0).toUpperCase();
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      {/* Mobile Header */}
       <div className="flex items-center justify-between border-b bg-white px-5 py-4 lg:hidden">
-        <button onClick={() => setSidebarOpen(true)} className="text-slate-700"><Menu size={25} /></button>
+        <button onClick={() => setSidebarOpen(true)} className="text-slate-700">
+          <Menu size={25} />
+        </button>
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
             <ShieldCheck size={21} />
           </div>
           <span className="text-lg font-bold text-blue-600">HelpBridge</span>
         </div>
-        <Bell size={22} className="text-slate-600" />
+        <Link href={`${userPrefix}/notifications`} className="relative text-slate-600">
+          <Bell size={22} />
+          <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            {requests.length > 0 ? 1 : 0}
+          </span>
+        </Link>
       </div>
+
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setSidebarOpen(false)}/>
+        <div className="fixed inset-0 z-40 bg-black/40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
-      <aside className={`fixed left-0 top-0 z-50 h-screen w-64 transform border-r bg-white transition-transform duration-300 lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed left-0 top-0 z-50 h-screen w-64 transform border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <div className="flex h-20 items-center justify-between border-b px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
@@ -38,37 +160,52 @@ export default function UserDashboard() {
             <X size={22} />
           </button>
         </div>
+
         <nav className="space-y-1 px-3 py-6">
-          <SidebarItem href="/user/dashboard" icon={<Home size={20} />} text="Dashboard" active/>
-          <SidebarItem href="/user/emergency" icon={<Siren size={20} />} text="Emergency SOS" emergency />
-          <SidebarItem href="/user/non-emergency" icon={<Wrench size={20} />} text="Non-Emergency Help"/>
-          <SidebarItem href="/user/active-requests" icon={<ClipboardList size={20} />} text="Active Requests"/>
-          <SidebarItem href="/user/history"icon={<History size={20} />} text="Request History"/>
-          <SidebarItem href="/user/messages" icon={<MessageSquare size={20} />} text="Messages" badge="2"/>
-          <SidebarItem href="/user/payments"  icon={<CreditCard size={20} />} text="Payments"/>
-          <SidebarItem href="/user/profile" icon={<User size={20} />} text="Profile"/>
-          <SidebarItem href="/user/settings" icon={<Settings size={20} />} text="Settings"/>
+          <SidebarItem href={`${userPrefix}/dashboard`} icon={<Home size={20} />} text="Dashboard" active />
+          <SidebarItem href={`${userPrefix}/emergency`} icon={<Siren size={20} />} text="Emergency SOS" emergency />
+          <SidebarItem href={`${userPrefix}/non-emergency`} icon={<Wrench size={20} />} text="Non-Emergency Help" />
+          <SidebarItem href="/requests" icon={<ClipboardList size={20} />} text="My Requests" />
+          <SidebarItem href={`${userPrefix}/history`} icon={<History size={20} />} text="Request History" />
+          <SidebarItem href={`${userPrefix}/active-requests`} icon={<Activity size={20} />} text="Active Requests" />
+          <SidebarItem href={`${userPrefix}/messages`} icon={<MessageSquare size={20} />} text="Messages" />
+          <SidebarItem href={`${userPrefix}/payments`} icon={<CreditCard size={20} />} text="Payments" />
+          <SidebarItem href={`${userPrefix}/notifications`} icon={<Bell size={20} />} text="Notifications" badge={requests.length > 0 ? "1" : undefined} />
+          <SidebarItem href={`${userPrefix}/profile`} icon={<User size={20} />} text="Profile" />
+          <SidebarItem href={`${userPrefix}/settings`} icon={<Settings size={20} />} text="Settings" />
+
           <div className="pt-2">
             <div className="my-2 border-t border-slate-100" />
             <SidebarItem
               href={`${providerPrefix}/dashboard`}
               icon={<BriefcaseBusiness size={20} />}
-              text="Helper Workspace"
+              text="Provider Workspace"
             />
           </div>
         </nav>
 
         <div className="absolute bottom-0 w-full border-t p-3">
-          <Link href="/login" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50">
-            <LogOut size={20} />Logout
+          <Link
+            href="/login"
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              sessionStorage.clear();
+            }}
+            className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50"
+          >
+            <LogOut size={20} />
+            Logout
           </Link>
         </div>
       </aside>
 
+      {/* Main Content */}
       <main className="lg:ml-64">
+        {/* Desktop Header */}
         <header className="hidden h-20 items-center justify-between border-b bg-white px-8 lg:flex">
           <div />
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <Link
               href={`${providerPrefix}/dashboard`}
               className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
@@ -77,15 +214,19 @@ export default function UserDashboard() {
               Helper Mode →
             </Link>
 
-            <Link href="/user/notifications" className="relative text-slate-600">
+            <Link href={`${userPrefix}/notifications`} className="relative text-slate-600">
               <Bell size={23} />
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">3</span>
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                {requests.length > 0 ? 1 : 0}
+              </span>
             </Link>
 
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600">C</div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600">
+                {initial}
+              </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800">Chandrakanth</p>
+                <p className="text-sm font-semibold text-slate-800">{displayName}</p>
                 <p className="text-xs text-slate-500">Dual-Role Member</p>
               </div>
             </div>
@@ -93,165 +234,327 @@ export default function UserDashboard() {
         </header>
 
         <div className="p-5 sm:p-8">
+          {/* Welcome Banner */}
           <div className="mb-8 flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Welcome, Chandrakanth!</h1>
-              <p className="mt-2 text-slate-500"></p>
+              <h1 className="text-3xl font-bold text-slate-900">Welcome back, {displayName}!</h1>
+              <p className="mt-2 text-slate-500">Track your requests and get help when you need it most.</p>
             </div>
 
             <div className="flex w-fit items-center gap-2 rounded-xl border bg-white px-4 py-3 shadow-sm">
-              <MapPin size={19} className="text-blue-600"/>
+              <MapPin size={19} className="text-blue-600" />
               <span className="text-sm font-medium text-slate-700">Hyderabad, Telangana</span>
             </div>
           </div>
 
-          <div className="mb-8 flex flex-col gap-4 rounded-2xl bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 p-6 text-white shadow-lg sm:flex-row sm:items-center sm:justify-between">
+          {/* Dual-Role Workspace Banner */}
+          <div className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-600 p-5 text-white shadow-lg">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur">
                 <BriefcaseBusiness size={26} className="text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold">Dual-Role Member: Helper Workspace</h3>
-                  <span className="rounded-full border border-emerald-400/30 bg-emerald-400/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-200">
+                  <h3 className="text-lg font-bold">Dual-Role Member: Provider Workspace</h3>
+                  <span className="rounded-full bg-emerald-400/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-200 border border-emerald-400/30">
                     Active
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-blue-100">
-                  You can both seek help and provide help! Switch to your helper workspace to browse nearby community requests and earn.
+                  You can both seek help and provide help! Browse requests in your neighborhood, accept emergency alerts, and earn.
                 </p>
               </div>
             </div>
             <Link
               href={`${providerPrefix}/dashboard`}
-              className="shrink-0 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-blue-700 shadow transition hover:bg-blue-50"
+              className="shrink-0 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-blue-700 shadow hover:bg-blue-50 transition"
             >
-              Open Helper Workspace →
+              Open Provider Workspace →
             </Link>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-2">
-            <div className="rounded-2xl border border-red-100 bg-gradient-to-br from-red-50 to-white p-6">
-              <div className="flex items-start gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
-                  <Siren size={31} />
+          {/* Active assignment banner */}
+          {activeAssignedRequests.length > 0 && (
+            <div className="mb-6 space-y-3">
+              {activeAssignedRequests.map((r) => (
+                <div key={r.id} className="flex items-center justify-between gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-500" />
+                    <div>
+                      <p className="font-bold text-emerald-800">
+                        {r.status === "in_progress"
+                          ? "🟢 Provider is helping you now"
+                          : r.status === "accepted"
+                          ? "🔵 Provider is on the way!"
+                          : "🟡 Provider has been assigned"}
+                      </p>
+                      <p className="text-xs text-emerald-700">{r.title}</p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Link
+                      href={`/requests/${r.id}/chat`}
+                      className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700"
+                    >
+                      <MessageSquare size={13} /> Chat
+                    </Link>
+                    <Link
+                      href={`${userPrefix}/notifications`}
+                      className="flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50"
+                    >
+                      <Bell size={13} /> Alerts
+                    </Link>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-red-600">Emergency SOS</h2>
-                  <p className="mt-2 max-w-sm text-slate-600">Get immediate help in critical situations.</p>
-                </div>
-              </div>
-              <Link href="/user/emergency" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-600">Send SOS Now
-                <ArrowRight size={18} />
-              </Link>
+              ))}
             </div>
-            <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-6">
-              <div className="flex items-start gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
-                  <Wrench size={31} />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-blue-600">Non-Emergency Help</h2>
-                  <p className="mt-2 max-w-sm text-slate-600">  Request assistance for general help and services.</p>
-                </div>
-              </div>
-              <Link href="/user/non-emergency" className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700">Request Hello<ArrowRight size={18} /></Link>
-            </div>
+          )}
+
+          {/* Action Cards */}
+          <div className="mb-8 grid gap-6 xl:grid-cols-2">
+            <ActionCard
+              title="Emergency SOS"
+              description="Request urgent support for critical incidents"
+              href={`${userPrefix}/emergency`}
+              accent="red"
+              icon={<Siren size={30} />}
+            />
+            <ActionCard
+              title="Non-Emergency Help"
+              description="Request assistance for regular support and services"
+              href={`${userPrefix}/non-emergency`}
+              accent="blue"
+              icon={<Wrench size={30} />}
+            />
           </div>
-          <div className="mt-8 grid gap-6 xl:grid-cols-3">
-            <div className="xl:col-span-2 rounded-2xl border bg-white shadow-sm">
+
+          {/* Stats Cards */}
+          <div className="mb-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Total requests" value={String(stats.total)} detail="All submissions" color="blue" />
+            <StatCard label="Active" value={String(stats.active)} detail="Currently tracking" color="amber" />
+            <StatCard label="Emergency" value={String(stats.emergency)} detail="Urgent support" color="red" />
+            <StatCard label="Completed" value={String(stats.completed)} detail="Resolved requests" color="green" />
+          </div>
+
+          {/* Main Grid: My Help Requests & Quick Actions */}
+          <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
+            <section className="rounded-2xl border bg-white shadow-sm">
               <div className="flex items-center justify-between border-b px-6 py-5">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Active Requests</h2>
-                  <p className="mt-1 text-sm text-slate-500">Track your ongoing help requests.</p>
+                  <h2 className="text-lg font-bold text-slate-900">My help requests</h2>
+                  <p className="mt-1 text-sm text-slate-500">Latest updates on your support requests</p>
                 </div>
-                <Link href="/user/active-requests" className="text-sm font-semibold text-blue-600 hover:text-blue-700">View All</Link>
+                <Link href="/requests" className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+                  View all
+                </Link>
               </div>
-              <div className="m-6 rounded-xl border-2 border-dashed border-blue-100 bg-blue-50/30 px-6 py-12 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
-                  <ClipboardList size={27} />
-                </div>
-                <h3 className="mt-4 font-bold text-slate-800">You have no active requests</h3>
-                <p className="mt-1 text-sm text-slate-500">Your active requests will appear here.</p>
-                <Link href="/user/non-emergency" className="mt-5 inline-block rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Send a Request</Link>
+
+              <div className="divide-y">
+                {loading ? (
+                  <div className="px-6 py-12 text-center text-slate-500">Loading your requests...</div>
+                ) : requests.length === 0 ? (
+                  <div className="px-6 py-12 text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+                      <ClipboardList size={28} />
+                    </div>
+                    <h3 className="mt-4 text-lg font-semibold text-slate-800">No requests yet</h3>
+                    <p className="mt-1 text-sm text-slate-500">Your requests will appear here after you submit one.</p>
+                    <Link
+                      href={`${userPrefix}/non-emergency`}
+                      className="mt-5 inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                    >
+                      Create a request
+                    </Link>
+                  </div>
+                ) : (
+                  requests.map((request) => (
+                    <div key={request.id} className="px-6 py-5">
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <h3 className="text-lg font-bold text-slate-800">{request.title || "Help request"}</h3>
+                            <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                              {requestTypeLabels[request.request_type] || request.request_type}
+                            </span>
+                          </div>
+
+                          <p className="mt-2 line-clamp-2 text-sm text-slate-600">
+                            {request.description || "No description added yet."}
+                          </p>
+
+                          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                            {request.address ? (
+                              <span className="inline-flex items-center gap-1">
+                                <MapPin size={13} className="text-blue-500" />
+                                {request.address}
+                              </span>
+                            ) : null}
+                            <span className="inline-flex items-center gap-1">
+                              <Clock3 size={13} className="text-slate-400" />
+                              {request.created_at ? formatRelativeTime(request.created_at) : "Just now"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col items-start gap-3 lg:items-end">
+                          <span
+                            className={`inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                              statusClassMap[request.status] || "bg-slate-100 text-slate-700 border-slate-200"
+                            }`}
+                          >
+                            {statusLabels[request.status] || request.status}
+                          </span>
+
+                          <div className="flex items-center gap-2">
+                            {request.status === "completed" ? (
+                              <Link
+                                href={`/payment?requestId=${request.id}`}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-sm transition"
+                              >
+                                <CreditCard size={15} />
+                                Pay for Help
+                              </Link>
+                            ) : null}
+                            {request.request_type === "non_emergency" &&
+                            ["approved", "bargaining"].includes(request.status) ? (
+                              <button
+                                type="button"
+                                onClick={() => setBargainRequestId(request.id)}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-2 text-xs font-bold text-white hover:bg-amber-400 shadow-sm transition"
+                              >
+                                <DollarSign size={15} />
+                                Negotiate
+                                {request.status === "bargaining" && (
+                                  <span className="ml-0.5 h-2 w-2 rounded-full bg-white animate-pulse" />
+                                )}
+                              </button>
+                            ) : null}
+                            {["assigned", "accepted", "in_progress"].includes(request.status) ? (
+                              <Link
+                                href={`/requests/${request.id}/chat`}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-700 shadow-sm transition"
+                              >
+                                <MessageSquare size={14} />
+                                Chat
+                              </Link>
+                            ) : null}
+                            <Link
+                              href={`/requests/${request.id}`}
+                              className="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 hover:text-slate-800"
+                            >
+                              Details
+                              <ChevronRight size={16} />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
-              <div className="border-t px-6 py-5">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-bold text-state-900">Recent Requests</h2>
-                  <Link href="/user/history" className="text-sm font-semibold text-blue-600">View All</Link>
-                </div>
-                <div className="py-10 text-center">
-                  <History size={38} className="mx-auto text-slate-300"/>
-                  <p className="mt-3 font-semibold text-slate-600">No recent requests</p>
-                  <p className="mt-1 text-sm text-slate-400">Your request history will appear here.</p>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-6">
+            </section>
+
+            {/* Aside Profile & Quick Actions */}
+            <aside className="space-y-6">
               <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-bold text-slate-900">My Profile</h2>
-                  <Link href="/user/profile" className="text-sm font-semibold text-blue-600">View Profile</Link>
-                </div>
-                <div className="mt-5 text-center">
-                  <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-600">C</div>
-                  <h3 className="mt-4 text-lg font-bold text-slate-900">Chandrakanth</h3>
-                </div>
-                <div className="mt-5 space-y-4">
-                  <ProfileItem icon={<Phone size={17} />}text="+91 9876543210"/>
-                  <ProfileItem icon={<Mail size={17} />} text="chandu@example.com"/>
-                  <ProfileItem icon={<MapPin size={17} />} text="Hyderabad, Telangana"/>
-                  <ProfileItem icon={<Droplet size={17} />} text="O+ Blood Group"/>
+                <h3 className="text-lg font-bold text-slate-900">Quick actions</h3>
+                <div className="mt-5 space-y-3">
+                  <QuickAction href={`${userPrefix}/emergency`} icon={<Siren size={18} />} title="Send SOS" color="red" />
+                  <QuickAction href={`${userPrefix}/non-emergency`} icon={<Wrench size={18} />} title="Request help" color="blue" />
+                  <QuickAction href="/requests" icon={<ClipboardList size={18} />} title="Review requests" color="green" />
+                  <QuickAction href={`${userPrefix}/notifications`} icon={<Bell size={18} />} title="View alerts" color="purple" />
                 </div>
               </div>
 
-              <div className="rounded-2xl border bg-white shadow-sm">
-                <div className="border-b px-6 py-5">
-                  <h2 className="font-bold text-slate-900">Quick Actions</h2>
+              {currentUser && (
+                <div className="rounded-2xl border bg-white p-6 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900">My Profile</h3>
+                    <Link href={`${userPrefix}/profile`} className="text-xs font-semibold text-blue-600 hover:underline">
+                      Edit
+                    </Link>
+                  </div>
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-600">
+                      {initial}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900">{displayName}</p>
+                      <p className="text-xs text-slate-500">{currentUser.email || "No email"}</p>
+                    </div>
+                  </div>
                 </div>
-                <QuickAction icon={<ClipboardList size={19} />} text="Track My Requests" href="/user/active-requests"/>
-                <QuickAction icon={<MessageSquare size={19} />} text="Message Support" href="/user/messages"/>
-                <QuickAction icon={<CreditCard size={19} />} text="Payment History" href="/user/payments"/>
-                <QuickAction icon={<User size={19} />} text="Update Profile" href="/user/profile"/>
-              </div>
+              )}
 
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                     <Headphones size={22} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-emerald-800">Need Help? </h3>
-                    <p className="text-sm text-emerald-700">Contact our support team.</p>
+                    <h3 className="font-bold text-slate-900">Need support?</h3>
+                    <p className="text-sm text-slate-600">Reach our team anytime</p>
                   </div>
                 </div>
-                <a href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@helpbridge.com"}`} className="mt-5 inline-block rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">Contact Support</a>
+                <a
+                  href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@helpbridge.com"}`}
+                  className="mt-5 inline-block w-full rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                  Contact support
+                </a>
               </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-purple-100 bg-purple-50 px-5 py-4">
-            <ShieldCheck size={21} className="mt-0.5 shrink-0 text-purple-600"/>
-            <p className="text-sm text-purple-700">
-              <span className="font-semibold"> Your safety is our priority. </span>{" "}
-              In case of a life-threatening emergency, please contact local emergency services directly.
-            </p>
+            </aside>
           </div>
         </div>
       </main>
+
+      {bargainRequestId !== null && (
+        <BargainModal
+          requestId={bargainRequestId}
+          role="seeker"
+          isOpen={true}
+          onClose={() => setBargainRequestId(null)}
+          onAgreed={() => setBargainRequestId(null)}
+        />
+      )}
     </div>
   );
 }
-function SidebarItem({href,icon,text,active = false,emergency = false,badge,}: {href: string;icon: React.ReactNode;text: string;active?: boolean;emergency?: boolean;badge?: string;}) {
-  const pathname = usePathname();
-  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
-  const targetHref = href.replace(/^\/user/, userPrefix);
-  const isActive = active || pathname === targetHref;
 
+function SidebarItem({
+  href,
+  icon,
+  text,
+  active = false,
+  emergency = false,
+  badge,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  text: string;
+  active?: boolean;
+  emergency?: boolean;
+  badge?: string;
+}) {
   return (
-    <Link href={targetHref} className={`flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${isActive? "bg-blue-50 text-blue-600": emergency? "text-slate-700 hover:bg-red-50 hover:text-red-600": "text-slate-700 hover:bg-slate-100"}`}>
+    <Link
+      href={href}
+      className={`flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${
+        active
+          ? "bg-blue-50 text-blue-600"
+          : emergency
+          ? "text-slate-700 hover:bg-red-50 hover:text-red-600"
+          : "text-slate-700 hover:bg-slate-100"
+      }`}
+    >
       <span className="flex items-center gap-3">
-        <span className={emergency && !isActive? "text-red-500": isActive? "text-blue-600": "text-slate-500"} >{icon}</span>
+        <span
+          className={
+            emergency && !active ? "text-red-500" : active ? "text-blue-600" : "text-slate-500"
+          }
+        >
+          {icon}
+        </span>
         {text}
       </span>
       {badge && (
@@ -262,26 +565,109 @@ function SidebarItem({href,icon,text,active = false,emergency = false,badge,}: {
     </Link>
   );
 }
-function ProfileItem({icon,text,}: {icon: React.ReactNode;text: string;}) {
+
+function StatCard({ label, value, detail, color }: { label: string; value: string; detail: string; color: "blue" | "amber" | "red" | "green" }) {
+  const colors = {
+    blue: { bg: "bg-blue-50", number: "text-blue-600" },
+    amber: { bg: "bg-amber-50", number: "text-amber-600" },
+    red: { bg: "bg-red-50", number: "text-red-600" },
+    green: { bg: "bg-emerald-50", number: "text-emerald-600" },
+  };
+
   return (
-    <div className="flex items-center gap-3 text-sm text-slate-600">
-      <span className="text-slate-400">{icon}</span>
-      <span>{text}</span>
+    <div className="rounded-2xl border bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-semibold text-slate-600">{label}</p>
+          <p className={`mt-3 text-3xl font-bold ${colors[color].number}`}>{value}</p>
+        </div>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-full ${colors[color].bg}`}>
+          <Activity size={22} className={colors[color].number} />
+        </div>
+      </div>
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-xs text-slate-500">{detail}</p>
+        <ChevronRight size={16} className="text-slate-400" />
+      </div>
     </div>
   );
 }
-function QuickAction({icon,text,href}: {icon: React.ReactNode;text: string;href: string;}) {
-  const pathname = usePathname();
-  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
-  const targetHref = href.replace(/^\/user/, userPrefix);
+
+function ActionCard({
+  title,
+  description,
+  href,
+  accent,
+  icon,
+}: {
+  title: string;
+  description: string;
+  href: string;
+  accent: "red" | "blue";
+  icon: React.ReactNode;
+}) {
+  const styles = {
+    red: "border-red-100 bg-gradient-to-br from-red-50 to-white",
+    blue: "border-blue-100 bg-gradient-to-br from-blue-50 to-white",
+  };
 
   return (
-    <Link href={targetHref} className="flex items-center justify-between border-b px-6 py-4 text-sm font-medium text-slate-700 transition last:border-b-0 hover:bg-slate-50">
+    <div className={`rounded-2xl border p-6 shadow-sm ${styles[accent]}`}>
+      <div className="flex items-start gap-5">
+        <div
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${
+            accent === "red" ? "bg-red-500 text-white" : "bg-blue-600 text-white"
+          }`}
+        >
+          {icon}
+        </div>
+        <div>
+          <h2 className={`text-xl font-bold ${accent === "red" ? "text-red-600" : "text-blue-600"}`}>{title}</h2>
+          <p className="mt-2 max-w-md text-slate-600">{description}</p>
+        </div>
+      </div>
+
+      <Link
+        href={href}
+        className={`mt-6 inline-flex items-center gap-2 rounded-lg px-5 py-3 font-semibold text-white transition ${
+          accent === "red" ? "bg-red-500 hover:bg-red-600" : "bg-blue-600 hover:bg-blue-700"
+        }`}
+      >
+        {title}
+        <ArrowRight size={18} />
+      </Link>
+    </div>
+  );
+}
+
+function QuickAction({
+  href,
+  icon,
+  title,
+  color,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  color: "red" | "blue" | "green" | "purple";
+}) {
+  const styles = {
+    red: "border-red-100 bg-red-50 text-red-600 hover:bg-red-100",
+    blue: "border-blue-100 bg-blue-50 text-blue-600 hover:bg-blue-100",
+    green: "border-green-100 bg-green-50 text-green-600 hover:bg-green-100",
+    purple: "border-purple-100 bg-purple-50 text-purple-600 hover:bg-purple-100",
+  };
+
+  return (
+    <Link
+      href={href}
+      className={`flex items-center justify-between gap-3 rounded-lg border p-3 text-sm font-semibold transition ${styles[color]}`}
+    >
       <span className="flex items-center gap-3">
-        <span className="text-blue-600">{icon}</span>
-        {text}
+        {icon}
+        {title}
       </span>
-      <ChevronRight size={17} className="text-slate-400"/>
+      <ChevronRight size={16} />
     </Link>
   );
 }
