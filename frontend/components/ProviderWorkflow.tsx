@@ -300,6 +300,7 @@ export function ProviderAvailableWorkflow() {
       {bargainRequest && (
         <BargainModal
           requestId={bargainRequest.id}
+          role="provider"
           isOpen={Boolean(bargainRequest)}
           onClose={() => setBargainRequest(null)}
           onAgreed={() => reload()}

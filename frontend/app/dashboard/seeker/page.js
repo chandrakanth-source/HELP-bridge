@@ -631,6 +631,7 @@ export default function SeekerDashboard() {
       {bargainRequestId !== null && (
         <BargainModal
           requestId={bargainRequestId}
+          role="seeker"
           isOpen={true}
           onClose={() => setBargainRequestId(null)}
           onAgreed={() => setBargainRequestId(null)}

@@ -194,6 +194,7 @@ export default function RequestsPage() {
       {bargainRequestId !== null && (
         <BargainModal
           requestId={bargainRequestId}
+          role="seeker"
           isOpen={true}
           onClose={() => { setBargainRequestId(null); void loadRequests(); }}
           onAgreed={() => { setBargainRequestId(null); void loadRequests(); }}
