@@ -51,19 +51,23 @@ const submitOffer = async (req, res) => {
       round_number: round_number ? parseInt(round_number) : 1,
     });
 
-    const targetUserId = isSeeker ? effectiveProviderId : seeker_id;
-    await createNotification(
-      targetUserId,
-      request_id,
-      "bargain_offer",
-      "New Price Offer Received",
-      `${isSeeker ? "Requester" : "Provider"} proposed a price of $${parseFloat(offered_price).toFixed(2)}.`
-    );
+    try {
+      const targetUserId = isSeeker ? effectiveProviderId : seeker_id;
+      await createNotification(
+        targetUserId,
+        request_id,
+        "bargain_offer",
+        "New Price Offer Received",
+        `${isSeeker ? "Requester" : "Provider"} proposed a price of $${parseFloat(offered_price).toFixed(2)}.`
+      );
+    } catch (notifErr) {
+      console.warn("Could not create bargain notification:", notifErr);
+    }
 
     res.status(201).json({ message: "Bargain offer submitted successfully", offer });
   } catch (error) {
     console.error("Submit offer error:", error);
-    res.status(500).json({ message: "Failed to submit bargain offer" });
+    res.status(500).json({ message: error.message || "Failed to submit bargain offer" });
   }
 };
 

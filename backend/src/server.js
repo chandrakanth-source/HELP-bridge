@@ -334,6 +334,33 @@ const runStartupMigrations = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  await pool.query(`
+    ALTER TABLE help_requests
+    ADD COLUMN IF NOT EXISTS agreed_price DECIMAL(10, 2);
+  `);
+
+  await pool.query(`
+    ALTER TABLE help_requests
+    DROP CONSTRAINT IF EXISTS request_status_check;
+  `);
+
+  await pool.query(`
+    ALTER TABLE help_requests
+    ADD CONSTRAINT request_status_check CHECK (
+      status IN (
+        'pending_verification',
+        'approved',
+        'rejected',
+        'bargaining',
+        'assigned',
+        'accepted',
+        'in_progress',
+        'completed',
+        'cancelled'
+      )
+    );
+  `);
 };
 
 const startServer = async () => {
