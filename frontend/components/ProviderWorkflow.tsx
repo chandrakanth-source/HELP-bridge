@@ -132,13 +132,15 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
           <nav className="flex flex-wrap items-center gap-2 text-sm">
             {(() => {
               const pathname = usePathname();
-              const providerPrefix = pathname.match(/^\/provider\/\d+/)?.[0] || "/provider";
+              const userId = pathname.match(/^\/provider\/(\d+)/)?.[1];
+              const providerPrefix = userId ? `/provider/${userId}` : "/provider";
+              const seekerHref = userId ? `/user/${userId}/dashboard` : "/user/dashboard";
               return (
                 <>
                   <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/dashboard`}>Dashboard</Link>
                   <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/available-requests`}>Available</Link>
                   <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/active-help`}>My help</Link>
-                  <Link className="rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-sm" href="/dashboard/seeker">
+                  <Link className="rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-sm" href={seekerHref}>
                     Seeker Mode (Request Help) →
                   </Link>
                 </>

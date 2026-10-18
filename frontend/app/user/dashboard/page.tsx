@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {Home,Siren,Wrench,ClipboardList,History,MessageSquare,CreditCard,User,Settings,LogOut,Bell,MapPin,Phone,Mail,Droplet,ChevronRight,Headphones,ShieldCheck,Menu,X,ArrowRight,} from "lucide-react";
+import {Home,Siren,Wrench,ClipboardList,History,MessageSquare,CreditCard,User,Settings,LogOut,Bell,MapPin,Phone,Mail,Droplet,ChevronRight,Headphones,ShieldCheck,Menu,X,ArrowRight,BriefcaseBusiness,} from "lucide-react";
 import { useState } from "react";
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
+  const userId = pathname.match(/^\/user\/(\d+)/)?.[1];
+  const userPrefix = userId ? `/user/${userId}` : "/user";
+  const providerPrefix = userId ? `/provider/${userId}` : "/provider";
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="flex items-center justify-between border-b bg-white px-5 py-4 lg:hidden">
@@ -46,6 +48,14 @@ export default function UserDashboard() {
           <SidebarItem href="/user/payments"  icon={<CreditCard size={20} />} text="Payments"/>
           <SidebarItem href="/user/profile" icon={<User size={20} />} text="Profile"/>
           <SidebarItem href="/user/settings" icon={<Settings size={20} />} text="Settings"/>
+          <div className="pt-2">
+            <div className="my-2 border-t border-slate-100" />
+            <SidebarItem
+              href={`${providerPrefix}/dashboard`}
+              icon={<BriefcaseBusiness size={20} />}
+              text="Helper Workspace"
+            />
+          </div>
         </nav>
 
         <div className="absolute bottom-0 w-full border-t p-3">
@@ -58,7 +68,15 @@ export default function UserDashboard() {
       <main className="lg:ml-64">
         <header className="hidden h-20 items-center justify-between border-b bg-white px-8 lg:flex">
           <div />
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
+            <Link
+              href={`${providerPrefix}/dashboard`}
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
+            >
+              <BriefcaseBusiness size={15} className="text-emerald-600" />
+              Helper Mode →
+            </Link>
+
             <Link href="/user/notifications" className="relative text-slate-600">
               <Bell size={23} />
               <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">3</span>
@@ -68,7 +86,7 @@ export default function UserDashboard() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-600">C</div>
               <div>
                 <p className="text-sm font-semibold text-slate-800">Chandrakanth</p>
-                <p className="text-xs text-slate-500">User</p>
+                <p className="text-xs text-slate-500">Dual-Role Member</p>
               </div>
             </div>
           </div>
@@ -85,6 +103,31 @@ export default function UserDashboard() {
               <MapPin size={19} className="text-blue-600"/>
               <span className="text-sm font-medium text-slate-700">Hyderabad, Telangana</span>
             </div>
+          </div>
+
+          <div className="mb-8 flex flex-col gap-4 rounded-2xl bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 p-6 text-white shadow-lg sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur">
+                <BriefcaseBusiness size={26} className="text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold">Dual-Role Member: Helper Workspace</h3>
+                  <span className="rounded-full border border-emerald-400/30 bg-emerald-400/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-200">
+                    Active
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-blue-100">
+                  You can both seek help and provide help! Switch to your helper workspace to browse nearby community requests and earn.
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`${providerPrefix}/dashboard`}
+              className="shrink-0 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-blue-700 shadow transition hover:bg-blue-50"
+            >
+              Open Helper Workspace →
+            </Link>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
