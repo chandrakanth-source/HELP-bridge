@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {Home,Siren,Wrench,ClipboardList,History,MessageSquare,CreditCard,User,Settings,LogOut,Bell,MapPin,Phone,Mail,Droplet,ChevronRight,Headphones,ShieldCheck,Menu,X,ArrowRight,} from "lucide-react";
 import { useState } from "react";
 export default function UserDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="flex items-center justify-between border-b bg-white px-5 py-4 lg:hidden">
@@ -197,10 +200,15 @@ export default function UserDashboard() {
   );
 }
 function SidebarItem({href,icon,text,active = false,emergency = false,badge,}: {href: string;icon: React.ReactNode;text: string;active?: boolean;emergency?: boolean;badge?: string;}) {
+  const pathname = usePathname();
+  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
+  const targetHref = href.replace(/^\/user/, userPrefix);
+  const isActive = active || pathname === targetHref;
+
   return (
-    <Link href={href} className={`flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${active? "bg-blue-50 text-blue-600": emergency? "text-slate-700 hover:bg-red-50 hover:text-red-600": "text-slate-700 hover:bg-slate-100"}`}>
+    <Link href={targetHref} className={`flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${isActive? "bg-blue-50 text-blue-600": emergency? "text-slate-700 hover:bg-red-50 hover:text-red-600": "text-slate-700 hover:bg-slate-100"}`}>
       <span className="flex items-center gap-3">
-        <span className={emergency && !active? "text-red-500": active? "text-blue-600": "text-slate-500"} >{icon}</span>
+        <span className={emergency && !isActive? "text-red-500": isActive? "text-blue-600": "text-slate-500"} >{icon}</span>
         {text}
       </span>
       {badge && (
@@ -220,8 +228,12 @@ function ProfileItem({icon,text,}: {icon: React.ReactNode;text: string;}) {
   );
 }
 function QuickAction({icon,text,href}: {icon: React.ReactNode;text: string;href: string;}) {
+  const pathname = usePathname();
+  const userPrefix = pathname.match(/^\/user\/\d+/)?.[0] || "/user";
+  const targetHref = href.replace(/^\/user/, userPrefix);
+
   return (
-    <Link href={href} className="flex items-center justify-between border-b px-6 py-4 text-sm font-medium text-slate-700 transition last:border-b-0 hover:bg-slate-50">
+    <Link href={targetHref} className="flex items-center justify-between border-b px-6 py-4 text-sm font-medium text-slate-700 transition last:border-b-0 hover:bg-slate-50">
       <span className="flex items-center gap-3">
         <span className="text-blue-600">{icon}</span>
         {text}

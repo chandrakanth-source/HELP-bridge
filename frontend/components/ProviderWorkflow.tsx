@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { apiRequest } from "../lib/api";
 import { MapPin, Send } from "lucide-react";
@@ -129,12 +130,20 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
             <h1 className="mt-1 text-3xl font-bold text-slate-900">{title}</h1>
           </div>
           <nav className="flex flex-wrap items-center gap-2 text-sm">
-            <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href="/provider/dashboard">Dashboard</Link>
-            <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href="/provider/available-requests">Available</Link>
-            <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href="/provider/active-help">My help</Link>
-            <Link className="rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-sm" href="/dashboard/seeker">
-              Seeker Mode (Request Help) →
-            </Link>
+            {(() => {
+              const pathname = usePathname();
+              const providerPrefix = pathname.match(/^\/provider\/\d+/)?.[0] || "/provider";
+              return (
+                <>
+                  <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/dashboard`}>Dashboard</Link>
+                  <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/available-requests`}>Available</Link>
+                  <Link className="rounded-lg border bg-white px-3 py-2 hover:bg-slate-50 transition" href={`${providerPrefix}/active-help`}>My help</Link>
+                  <Link className="rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-sm" href="/dashboard/seeker">
+                    Seeker Mode (Request Help) →
+                  </Link>
+                </>
+              );
+            })()}
           </nav>
         </div>
         {children}

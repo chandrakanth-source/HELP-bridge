@@ -82,34 +82,38 @@ export default function ManagerLayout({ children }: { children: React.ReactNode 
                 </div>
 
                 <nav className="min-h-0 flex-1 overflow-y-auto px-4 py-6">
-                    {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
-                        const active = pathname === href || pathname.startsWith(href + "/");
-                        const badge = href === "/manager/emergency_requests" ? stats?.total_count :
-                            href === "/manager/pending-verification" ? stats?.pending_count :
-                                href === "/manager/active-requests" ? stats?.active_count :
-                                    href === "/manager/notifications" ? stats?.unread_notifications : undefined;
-                        return (
-                            <Link
-                                key={href}
-                                href={href}
-                                onClick={() => setSidebarOpen(false)}
-                                className={`mb-1 flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${active
-                                        ? "bg-[#1769e8] text-white"
-                                        : "text-blue-50 hover:bg-white/10"
-                                    }`}
-                            >
-                                <span className="flex items-center gap-4">
-                                    <Icon size={20} />
-                                    {label}
-                                </span>
-                                {badge !== undefined && badge > 0 && (
-                                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${active ? "bg-white text-blue-600" : "bg-red-500 text-white"}`}>
-                                        {badge}
+                    {(() => {
+                        const managerPrefix = pathname.match(/^\/manager\/\d+/)?.[0] || "/manager";
+                        return NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+                            const targetHref = href.replace("/manager", managerPrefix);
+                            const active = pathname === targetHref || pathname.startsWith(targetHref + "/");
+                            const badge = href === "/manager/emergency_requests" ? stats?.total_count :
+                                href === "/manager/pending-verification" ? stats?.pending_count :
+                                    href === "/manager/active-requests" ? stats?.active_count :
+                                        href === "/manager/notifications" ? stats?.unread_notifications : undefined;
+                            return (
+                                <Link
+                                    key={href}
+                                    href={targetHref}
+                                    onClick={() => setSidebarOpen(false)}
+                                    className={`mb-1 flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition ${active
+                                            ? "bg-[#1769e8] text-white"
+                                            : "text-blue-50 hover:bg-white/10"
+                                        }`}
+                                >
+                                    <span className="flex items-center gap-4">
+                                        <Icon size={20} />
+                                        {label}
                                     </span>
-                                )}
-                            </Link>
-                        );
-                    })}
+                                    {badge !== undefined && badge > 0 && (
+                                        <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${active ? "bg-white text-blue-600" : "bg-red-500 text-white"}`}>
+                                            {badge}
+                                        </span>
+                                    )}
+                                </Link>
+                            );
+                        });
+                    })()}
                 </nav>
 
                 <div className="mx-4 mb-4 shrink-0 rounded-xl bg-white/10 p-4 text-center">

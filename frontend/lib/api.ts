@@ -1,13 +1,39 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://help-bridge-34vg.onrender.com/api";
 
+export const getActiveToken = (explicitToken?: string | null): string | null => {
+  if (typeof window === "undefined") return explicitToken || null;
+  const match = window.location.pathname.match(/\/(user|manager|provider|admin)\/(\d+)/);
+  if (match && match[2]) {
+    const userToken = localStorage.getItem(`token_${match[2]}`);
+    if (userToken) return userToken;
+  }
+  return explicitToken || localStorage.getItem("token");
+};
+
+export const getActiveUser = (): any => {
+  if (typeof window === "undefined") return null;
+  try {
+    const match = window.location.pathname.match(/\/(user|manager|provider|admin)\/(\d+)/);
+    if (match && match[2]) {
+      const userObj = localStorage.getItem(`user_${match[2]}`);
+      if (userObj) return JSON.parse(userObj);
+    }
+    const defaultUser = localStorage.getItem("user");
+    return defaultUser ? JSON.parse(defaultUser) : null;
+  } catch {
+    return null;
+  }
+};
+
 export const apiRequest = async (endpoint: string, options: RequestInit = {}, token: string | null = null): Promise<any> => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  const effectiveToken = getActiveToken(token);
+  if (effectiveToken) {
+    headers.Authorization = `Bearer ${effectiveToken}`;
   }
 
   let response: Response;

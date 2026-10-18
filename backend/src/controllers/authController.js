@@ -58,9 +58,9 @@ const register = async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 10);
 
-    const accountRole = ["provider", "seeker", "user"].includes(role)
-      ? "user"
-      : role;
+    const accountRole = ["provider", "seeker", "user", "manager"].includes(role)
+      ? role
+      : "user";
 
     const user = await createUser({
       name,

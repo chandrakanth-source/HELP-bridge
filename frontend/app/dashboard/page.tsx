@@ -13,18 +13,18 @@ export default function DashboardPage() {
       if (stored) {
         const user = JSON.parse(stored);
         if (user.role === "manager") {
-          router.replace("/manager/dashboard");
+          router.replace(`/manager/${user.id}/dashboard`);
           return;
         }
         if (user.role === "admin") {
-          router.replace("/admin/dashboard");
+          router.replace(`/admin/${user.id}/dashboard`);
           return;
         }
         if (user.role === "provider") {
-          router.replace("/provider/dashboard");
+          router.replace(`/provider/${user.id}/dashboard`);
           return;
         }
-        router.replace("/user/dashboard");
+        router.replace(`/user/${user.id}/dashboard`);
         return;
       }
       router.replace("/login");

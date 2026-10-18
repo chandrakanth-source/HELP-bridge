@@ -27,13 +27,16 @@ export default function LoginPage() {
       });
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem(`token_${data.user.id}`, data.token);
+      localStorage.setItem(`user_${data.user.id}`, JSON.stringify(data.user));
+
       const dashboard = data.user.role === "manager"
-        ? "/manager/dashboard"
+        ? `/manager/${data.user.id}/dashboard`
         : data.user.role === "admin"
-          ? "/admin/dashboard"
+          ? `/admin/${data.user.id}/dashboard`
           : data.user.role === "provider"
-            ? "/provider/dashboard"
-            : "/dashboard/seeker";
+            ? `/provider/${data.user.id}/dashboard`
+            : `/user/${data.user.id}/dashboard`;
       router.push(dashboard);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Login failed");
