@@ -279,6 +279,65 @@ const getProviders = async (req, res) => {
   }
 };
 
+const updateProviderVerification = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!["verified", "rejected", "pending"].includes(status)) {
+      return res.status(400).json({
+        message: "Status must be 'verified', 'rejected', or 'pending'",
+      });
+    }
+
+    const result = await pool.query(
+      `
+        UPDATE users
+        SET verification_status = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND role IN ('provider', 'seeker', 'user')
+        RETURNING id, name, email, phone, occupation, address, availability_status, verification_status, created_at;
+      `,
+      [status, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Provider not found" });
+    }
+
+    const updatedProvider = result.rows[0];
+
+    try {
+      if (status === "verified") {
+        await createNotification(
+          updatedProvider.id,
+          null,
+          "account_verified",
+          "Provider Account Verified",
+          "Your provider account has been verified by the manager. You are now eligible to accept and be assigned help requests.",
+        );
+      } else if (status === "rejected") {
+        await createNotification(
+          updatedProvider.id,
+          null,
+          "account_rejected",
+          "Verification Update",
+          "Your provider verification was rejected by the manager. Please review your profile details.",
+        );
+      }
+    } catch (notifErr) {
+      console.warn("Could not create verification notification:", notifErr);
+    }
+
+    res.status(200).json({
+      message: `Provider status successfully updated to ${status}`,
+      provider: updatedProvider,
+    });
+  } catch (error) {
+    console.error("Update provider verification error:", error);
+    res.status(500).json({ message: "Failed to update provider verification status" });
+  }
+};
+
 const getNearbyProviders = async (req, res) => {
   try {
     const result = await pool.query(
@@ -558,6 +617,7 @@ module.exports = {
   getProviderByIdOrName,
   getProviders,
   getNearbyProviders,
+  updateProviderVerification,
   approveRequest,
   rejectRequest,
   assignProvider,

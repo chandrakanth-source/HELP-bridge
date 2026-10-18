@@ -12,6 +12,7 @@ const {
   getProviderByIdOrName,
   getProviders,
   getNearbyProviders,
+  updateProviderVerification,
   approveRequest,
   rejectRequest,
   completeRequest,
@@ -80,6 +81,20 @@ router.get(
 );
 
 router.get("/providers", authMiddleware, managerMiddleware, getProviders);
+
+router.patch(
+  "/providers/:id/verification",
+  authMiddleware,
+  managerMiddleware,
+  updateProviderVerification,
+);
+
+router.put(
+  "/providers/:id/verification",
+  authMiddleware,
+  managerMiddleware,
+  updateProviderVerification,
+);
 
 router.get(
   "/requests/:id/nearby-providers",

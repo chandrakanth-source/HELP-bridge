@@ -45,6 +45,32 @@ export default function ProvidersPage() {
     return () => { cancelled = true; };
   }, []);
 
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
+
+  const handleUpdateStatus = async (id: number, status: "verified" | "rejected") => {
+    setUpdatingId(id);
+    setError("");
+    try {
+      await apiRequest(
+        `/manager/providers/${id}/verification`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        },
+        localStorage.getItem("token")
+      );
+      setProviders((current) =>
+        current.map((p) =>
+          p.id === id ? { ...p, verification_status: status } : p
+        )
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update verification status.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const filteredProviders = providers.filter((provider) => {
     const searchable = [provider.name, provider.email, provider.phone, provider.occupation, provider.address, String(provider.id)]
       .filter(Boolean)
@@ -91,6 +117,7 @@ export default function ProvidersPage() {
           <div className="divide-y">
             {filteredProviders.map((provider) => {
               const status = getStatus(provider);
+              const isUpdating = updatingId === provider.id;
               return (
                 <div key={provider.id} className="flex flex-col gap-4 px-5 py-5 lg:flex-row lg:items-center lg:justify-between hover:bg-slate-50">
                   <div className="flex min-w-0 items-center gap-4">
@@ -101,9 +128,61 @@ export default function ProvidersPage() {
                       <p className="mt-1 flex items-center gap-1 text-xs text-slate-500"><MapPin size={13} />{provider.address || "Location unavailable"}</p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between gap-5 lg:justify-end">
-                    <div className="text-left text-xs text-slate-500 lg:text-right"><p>{provider.email}</p><p className="mt-1">Joined {new Date(provider.created_at).toLocaleDateString()}</p></div>
-                    <Link href={`/manager/providers/${encodeURIComponent(String(provider.id))}`} className="flex h-9 w-9 items-center justify-center rounded-lg border text-slate-600 hover:bg-blue-50" title="View provider"><Eye size={16} /></Link>
+                  <div className="flex flex-wrap items-center justify-between gap-4 lg:justify-end">
+                    <div className="text-left text-xs text-slate-500 lg:text-right">
+                      <p>{provider.email}</p>
+                      <p className="mt-1">Joined {new Date(provider.created_at).toLocaleDateString()}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {provider.verification_status === "pending" && (
+                        <>
+                          <button
+                            onClick={() => handleUpdateStatus(provider.id, "verified")}
+                            disabled={isUpdating}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50"
+                            title="Verify and approve provider"
+                          >
+                            {isUpdating ? <LoaderCircle size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                            Verify
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(provider.id, "rejected")}
+                            disabled={isUpdating}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50"
+                            title="Reject provider verification"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+
+                      {provider.verification_status === "verified" && (
+                        <button
+                          onClick={() => handleUpdateStatus(provider.id, "rejected")}
+                          disabled={isUpdating}
+                          className="text-xs text-slate-400 hover:text-red-600"
+                          title="Revoke verification"
+                        >
+                          Revoke
+                        </button>
+                      )}
+
+                      {provider.verification_status === "rejected" && (
+                        <button
+                          onClick={() => handleUpdateStatus(provider.id, "verified")}
+                          disabled={isUpdating}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                          title="Re-verify provider"
+                        >
+                          Re-verify
+                        </button>
+                      )}
+
+                      <Link href={`/manager/providers/${encodeURIComponent(String(provider.id))}`} className="flex h-9 w-9 items-center justify-center rounded-lg border text-slate-600 hover:bg-blue-50" title="View provider details">
+                        <Eye size={16} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
