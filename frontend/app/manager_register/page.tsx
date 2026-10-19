@@ -2,12 +2,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {HeartHandshake,User,Mail,Phone,Lock,Eye,EyeOff,Briefcase,Building2,MapPin,FileText,ShieldCheck,} from "lucide-react";
+import {HeartHandshake,User,Mail,Phone,Lock,Eye,EyeOff,Briefcase,Building2,MapPin,FileText,ShieldCheck,Upload,X,} from "lucide-react";
 import { apiRequest } from "../../lib/api";
 export default function ManagerRegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", occupation: "", organization: "", designation: "", workLocation: "", reason: "", password: "", confirmPassword: "" });
+  const [selectedDoc, setSelectedDoc] = useState<File | null>(null);
+  const [docPreview, setDocPreview] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -35,17 +37,21 @@ export default function ManagerRegisterPage() {
 
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("password", form.password);
+      if (form.occupation) formData.append("occupation", form.occupation);
+      if (form.workLocation) formData.append("address", form.workLocation);
+      formData.append("role", "manager");
+      if (selectedDoc) {
+        formData.append("document", selectedDoc);
+      }
+
       await apiRequest("/auth/register", {
         method: "POST",
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
-          password: form.password,
-          occupation: form.occupation,
-          address: form.workLocation,
-          role: "manager",
-        }),
+        body: formData,
       });
       setSuccess("Manager application submitted. An administrator must approve your account before access is granted.");
       setTimeout(() => router.push("/login"), 1400);
@@ -162,6 +168,72 @@ export default function ManagerRegisterPage() {
                       </div>
                     </div>
                   </div>
+                </section>
+
+                <section>
+                  <div className="mb-2 flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-slate-800">Verification Document (Optional)</h3>
+                    <span className="text-xs text-slate-400">PDF, JPG, PNG up to 10MB</span>
+                  </div>
+                  <p className="mb-4 text-xs text-slate-500">
+                    Upload authorization letter, organization ID, or government identification to expedite verification.
+                  </p>
+
+                  {!selectedDoc ? (
+                    <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/60 p-6 text-center transition hover:border-emerald-400 hover:bg-emerald-50/20">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                        <Upload size={22} />
+                      </div>
+                      <p className="mt-2.5 text-sm font-semibold text-slate-700">Click to upload document or drag & drop</p>
+                      <p className="text-xs text-slate-400">PDF, PNG, JPG, or WEBP</p>
+                      <input
+                        type="file"
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            const file = e.target.files[0];
+                            setSelectedDoc(file);
+                            if (file.type.startsWith("image/")) {
+                              setDocPreview(URL.createObjectURL(file));
+                            } else {
+                              setDocPreview(null);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  ) : (
+                    <div className="flex items-center justify-between rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4">
+                      <div className="flex items-center gap-3">
+                        {docPreview ? (
+                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border bg-white">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={docPreview} alt="Doc preview" className="h-full w-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                            <FileText size={24} />
+                          </div>
+                        )}
+                        <div>
+                          <p className="max-w-[280px] truncate text-sm font-bold text-slate-800">{selectedDoc.name}</p>
+                          <p className="text-xs text-slate-500">{(selectedDoc.size / (1024 * 1024)).toFixed(2)} MB · Ready to upload</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (docPreview) URL.revokeObjectURL(docPreview);
+                          setSelectedDoc(null);
+                          setDocPreview(null);
+                        }}
+                        className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                      >
+                        <X size={15} /> Remove
+                      </button>
+                    </div>
+                  )}
                 </section>
 
                 <div className="rounded-xl bg-slate-50 p-4">

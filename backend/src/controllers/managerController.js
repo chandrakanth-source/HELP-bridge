@@ -235,7 +235,7 @@ const getProviderByIdOrName = async (req, res) => {
   try {
     const result = await pool.query(
       `
-        SELECT id, name, email, phone, address, availability_status, verification_status, created_at
+        SELECT id, name, email, phone, occupation, address, availability_status, verification_status, document_url, created_at
         FROM users
         WHERE role IN ('provider', 'seeker', 'user') AND (id::text = $1 OR name = $1)
         LIMIT 1
@@ -266,6 +266,7 @@ const getProviders = async (req, res) => {
         address,
         availability_status,
         verification_status,
+        document_url,
         created_at
       FROM users
       WHERE role IN ('provider', 'seeker', 'user')
@@ -295,7 +296,7 @@ const updateProviderVerification = async (req, res) => {
         UPDATE users
         SET verification_status = $1, updated_at = CURRENT_TIMESTAMP
         WHERE id = $2 AND role IN ('provider', 'seeker', 'user')
-        RETURNING id, name, email, phone, occupation, address, availability_status, verification_status, created_at;
+        RETURNING id, name, email, phone, occupation, address, availability_status, verification_status, document_url, created_at;
       `,
       [status, id],
     );

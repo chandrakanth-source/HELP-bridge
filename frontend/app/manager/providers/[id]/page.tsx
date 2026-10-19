@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   XCircle,
+  FileText,
 } from "lucide-react";
 
 type Provider = {
@@ -25,6 +26,7 @@ type Provider = {
   address: string | null;
   availability_status: string;
   verification_status: "pending" | "verified" | "rejected" | string;
+  document_url?: string | null;
   created_at: string;
 };
 
@@ -257,6 +259,50 @@ export default function ProviderDetailsPage() {
             icon={<Clock size={16} />}
           />
         </InfoCard>
+      </div>
+
+      {/* Verification Document Card */}
+      <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between border-b pb-4">
+          <div>
+            <h2 className="text-lg font-bold text-[#12234b]">Verification Document</h2>
+            <p className="text-xs text-slate-500">Government ID, license, or credentials submitted during registration</p>
+          </div>
+          <FileText className="text-slate-400" size={24} />
+        </div>
+
+        <div className="mt-5">
+          {provider.document_url ? (
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800">
+                    {provider.document_url.endsWith(".pdf") ? "Verification Document (PDF)" : "Verification Document (Image)"}
+                  </p>
+                  <p className="text-xs text-slate-500">Uploaded for identity / trade verification</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href={provider.document_url.startsWith("http") ? provider.document_url : `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:5000"}${provider.document_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-700"
+                >
+                  View Document
+                </a>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm italic text-slate-400">
+              No verification document was attached during registration.
+            </p>
+          )}
+        </div>
       </div>
     </DetailShell>
   );

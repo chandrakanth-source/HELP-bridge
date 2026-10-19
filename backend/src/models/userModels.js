@@ -27,6 +27,7 @@ const findUserById = async (id) => {
             role,
             availability_status,
             verification_status,
+            document_url,
             created_at
         FROM users
         WHERE id = $1;
@@ -62,6 +63,7 @@ const createUser = async (userData) => {
     longitude,
     address,
     role,
+    document_url,
   } = userData;
 
   const query = `
@@ -75,9 +77,10 @@ const createUser = async (userData) => {
             latitude,
             longitude,
             address,
-            role
+            role,
+            document_url
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING
             id,
             name,
@@ -91,6 +94,7 @@ const createUser = async (userData) => {
             role,
             availability_status,
             verification_status,
+            document_url,
             created_at;
     `;
 
@@ -105,6 +109,7 @@ const createUser = async (userData) => {
     longitude,
     address,
     role || "seeker",
+    document_url || null,
   ];
 
   const result = await pool.query(query, values);

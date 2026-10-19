@@ -25,12 +25,13 @@ const fileFilter = (req, file, cb) => {
     "image/png",
     "image/webp",
     "image/gif",
+    "application/pdf",
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (JPEG, PNG, WEBP, GIF) are allowed"), false);
+    cb(new Error("Only image files (JPEG, PNG, WEBP, GIF) and PDF documents are allowed"), false);
   }
 };
 

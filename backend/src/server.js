@@ -298,6 +298,11 @@ const runStartupMigrations = async () => {
   `);
 
   await pool.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS document_url TEXT;
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS provider_request_interests (
       id SERIAL PRIMARY KEY,
       request_id INTEGER NOT NULL REFERENCES help_requests(id) ON DELETE CASCADE,

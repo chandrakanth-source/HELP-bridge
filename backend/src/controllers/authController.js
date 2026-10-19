@@ -62,6 +62,10 @@ const register = async (req, res) => {
       ? role
       : "user";
 
+    const document_url = req.file
+      ? `/uploads/${req.file.filename}`
+      : req.body.document_url || null;
+
     const user = await createUser({
       name,
       email: email.trim().toLowerCase(),
@@ -73,6 +77,7 @@ const register = async (req, res) => {
       longitude,
       address,
       role: accountRole,
+      document_url,
     });
 
     res.status(201).json({
