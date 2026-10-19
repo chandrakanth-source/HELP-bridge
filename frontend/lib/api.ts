@@ -36,10 +36,14 @@ export const getActiveUser = (): any => {
 };
 
 export const apiRequest = async (endpoint: string, options: RequestInit = {}, token: string | null = null): Promise<any> => {
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };
+
+  if (!isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
 
   const effectiveToken = getActiveToken(token);
   if (effectiveToken) {

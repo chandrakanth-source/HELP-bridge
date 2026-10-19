@@ -13,6 +13,7 @@ const getApprovedRequests = async (providerId) => {
             hr.longitude,
             hr.address,
             hr.status,
+            hr.attachment_url,
             hr.created_at,
             u.name AS requester_name,
             u.phone AS requester_phone
@@ -61,6 +62,7 @@ const getApprovedRequestById = async (id) => {
             hr.address,
             hr.status,
             hr.assigned_provider_id,
+            hr.attachment_url,
             hr.created_at,
             u.name AS requester_name,
             u.phone AS requester_phone

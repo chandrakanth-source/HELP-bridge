@@ -9,8 +9,18 @@ const {
 } = require("../controllers/helpRequestController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
-router.post("/", authMiddleware, createRequest);
+const handleUpload = (req, res, next) => {
+  upload.single("image")(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || "File upload failed" });
+    }
+    next();
+  });
+};
+
+router.post("/", authMiddleware, handleUpload, createRequest);
 
 router.get("/my", authMiddleware, getMyRequests);
 

@@ -10,6 +10,7 @@ const createHelpRequest = async (requestData) => {
     latitude,
     longitude,
     address,
+    attachment_url,
   } = requestData;
 
   const query = `
@@ -21,9 +22,10 @@ const createHelpRequest = async (requestData) => {
             description,
             latitude,
             longitude,
-            address
+            address,
+            attachment_url
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
     `;
 
@@ -36,6 +38,7 @@ const createHelpRequest = async (requestData) => {
     latitude,
     longitude,
     address,
+    attachment_url || null,
   ];
 
   const result = await pool.query(query, values);

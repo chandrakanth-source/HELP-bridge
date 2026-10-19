@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Wrench, MapPin, Send, Phone, Info, LoaderCircle } from "lucide-react";
+import { ArrowLeft, Wrench, MapPin, Send, Phone, Info, LoaderCircle, Camera, Upload, X } from "lucide-react";
 import { apiRequest } from "../../../lib/api";
 
 export default function NonEmergencyPage() {
@@ -16,6 +16,8 @@ export default function NonEmergencyPage() {
   const [loading, setLoading] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [dashboardUrl, setDashboardUrl] = useState("/user/dashboard");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -118,18 +120,22 @@ export default function NonEmergencyPage() {
 
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("request_type", "non_emergency");
+      formData.append("title", helpType || "General assistance");
+      formData.append("description", description);
+      formData.append("latitude", String(lat));
+      formData.append("longitude", String(lon));
+      formData.append("address", address || "Location specified");
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+      }
+
       await apiRequest(
         "/help-requests",
         {
           method: "POST",
-          body: JSON.stringify({
-            request_type: "non_emergency",
-            title: helpType || "General assistance",
-            description,
-            latitude: lat,
-            longitude: lon,
-            address: address || "Location specified",
-          }),
+          body: formData,
         },
         localStorage.getItem("token")
       );
@@ -246,6 +252,62 @@ export default function NonEmergencyPage() {
               <p className="mt-2 text-xs text-emerald-600">
                 Coordinates ready: {latitude.toFixed(4)}, {longitude.toFixed(4)}
               </p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label className="mb-2 flex items-center justify-between text-sm font-semibold text-slate-700">
+              <span className="flex items-center gap-1.5">
+                <Camera size={16} className="text-blue-500" /> Attach Reference Photo (Optional)
+              </span>
+              <span className="text-xs font-normal text-slate-400">JPG, PNG, WEBP up to 10MB</span>
+            </label>
+
+            {!imagePreview ? (
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 transition hover:border-blue-400 hover:bg-blue-50/20">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <Upload size={20} />
+                </div>
+                <p className="mt-2 text-sm font-semibold text-slate-700">Click to upload photo or drag & drop</p>
+                <p className="text-xs text-slate-400">Add a picture of the issue (e.g. flat tire, leak, etc.)</p>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      const file = e.target.files[0];
+                      setSelectedImage(file);
+                      setImagePreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+              </label>
+            ) : (
+              <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white p-2">
+                <div className="relative aspect-video max-h-56 w-full overflow-hidden rounded-lg bg-slate-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imagePreview}
+                    alt="Photo preview"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <div className="mt-2 flex items-center justify-between px-2 text-xs text-slate-600">
+                  <span className="truncate max-w-[250px] font-medium">{selectedImage?.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (imagePreview) URL.revokeObjectURL(imagePreview);
+                      setSelectedImage(null);
+                      setImagePreview(null);
+                    }}
+                    className="flex items-center gap-1 rounded px-2 py-1 font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    <X size={14} /> Remove photo
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 

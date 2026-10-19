@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const http = require("http");
 const helmet = require("helmet");
@@ -229,9 +230,27 @@ app.use(
     credentials: true,
   })
 );
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+const upload = require("./middleware/uploadMiddleware");
+app.post("/api/upload", (req, res) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) return res.status(400).json({ message: err.message || "Upload failed" });
+    if (!req.file) return res.status(400).json({ message: "No file provided" });
+    res.json({
+      success: true,
+      url: `/uploads/${req.file.filename}`,
+      filename: req.file.filename,
+    });
+  });
+});
 const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 500,
@@ -338,6 +357,11 @@ const runStartupMigrations = async () => {
   await pool.query(`
     ALTER TABLE help_requests
     ADD COLUMN IF NOT EXISTS agreed_price DECIMAL(10, 2);
+  `);
+
+  await pool.query(`
+    ALTER TABLE help_requests
+    ADD COLUMN IF NOT EXISTS attachment_url TEXT;
   `);
 
   await pool.query(`

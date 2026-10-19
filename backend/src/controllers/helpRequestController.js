@@ -36,6 +36,10 @@ const createRequest = async (req, res) => {
 
     const requester_id = req.user.id;
 
+    const attachment_url = req.file
+      ? `/uploads/${req.file.filename}`
+      : req.body.attachment_url || null;
+
     const pool = require("../config/database");
     const { createNotification } = require("../models/notificationModel");
 
@@ -45,9 +49,10 @@ const createRequest = async (req, res) => {
       emergency_type,
       title,
       description,
-      latitude,
-      longitude,
+      latitude: Number(latitude),
+      longitude: Number(longitude),
       address,
+      attachment_url,
     });
 
     const managersRes = await pool.query(
